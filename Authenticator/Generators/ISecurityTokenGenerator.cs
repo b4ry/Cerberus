@@ -1,4 +1,4 @@
-﻿namespace Authenticator.Generators
+﻿namespace Cerberus.Generators
 {
     public interface ISecurityTokenGenerator
     {

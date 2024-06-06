@@ -1,4 +1,4 @@
-﻿using Authenticator.Attributes;
+﻿using Cerberus.Attributes;
 
 namespace Tests.Attributes
 {

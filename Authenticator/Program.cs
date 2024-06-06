@@ -1,4 +1,4 @@
-using Authenticator.Generators;
+using Cerberus.Generators;
 
 var builder = WebApplication.CreateBuilder(args);
 

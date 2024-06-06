@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Authenticator\Authenticator.csproj" />
+    <ProjectReference Include="..\Authenticator\Cerberus.csproj" />
   </ItemGroup>
 
   <ItemGroup>

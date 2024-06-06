@@ -1,9 +1,9 @@
-﻿using Authenticator.Constants;
+﻿using Cerberus.Constants;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
-namespace Authenticator.Generators
+namespace Cerberus.Generators
 {
     public class JwtSecurityTokenGenerator(IConfiguration configuration) : ISecurityTokenGenerator
     {

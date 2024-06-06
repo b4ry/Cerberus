@@ -1,5 +1,5 @@
-using Authenticator.Constants;
-using Authenticator.Generators;
+using Cerberus.Constants;
+using Cerberus.Generators;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;

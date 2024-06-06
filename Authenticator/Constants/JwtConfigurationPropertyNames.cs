@@ -1,4 +1,4 @@
-﻿namespace Authenticator.Constants
+﻿namespace Cerberus.Constants
 {
     public static class JwtConfigurationPropertyNames
     {

@@ -1,6 +1,6 @@
-﻿using Authenticator.Attributes;
+﻿using Cerberus.Attributes;
 
-namespace Authenticator.DTOs
+namespace Cerberus.DTOs
 {
     public sealed class LoginRequest
     {

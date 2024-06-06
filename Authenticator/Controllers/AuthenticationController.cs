@@ -1,9 +1,9 @@
-using Authenticator.DTOs;
-using Authenticator.Generators;
+using Cerberus.DTOs;
+using Cerberus.Generators;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
-namespace Authenticator.Controllers
+namespace Cerberus.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
