@@ -52,7 +52,7 @@ namespace Cerberus.Controllers
             _logger.LogInformation($"Logging in user {request.UserName}");
             // login process
 
-            string jwt = _securityTokenGenerator.GenerateSecurityToken();
+            string jwt = _securityTokenGenerator.GenerateSecurityToken(request.UserName);
 
             return Ok(jwt);
         }

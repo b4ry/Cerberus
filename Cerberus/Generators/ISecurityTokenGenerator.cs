@@ -9,7 +9,8 @@
         /// <summary>
         /// Generates a security token, eg. JWT.
         /// </summary>
+        /// <param name="userName">Logging in user's name</param>
         /// <returns>A security token. String.</returns>
-        public string GenerateSecurityToken();
+        public string GenerateSecurityToken(string userName);
     }
 }
