@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace Tests.Generators
@@ -23,7 +24,7 @@ namespace Tests.Generators
             var tokenGenerator = new JwtSecurityTokenGenerator(mockConfiguration.Object);
 
             // Act
-            var token = tokenGenerator.GenerateSecurityToken();
+            var token = tokenGenerator.GenerateSecurityToken("testUserName");
 
             // Assert
             Assert.NotNull(token);
@@ -34,6 +35,7 @@ namespace Tests.Generators
 
             Assert.NotNull(securityToken);
             Assert.Equal(secretIssuer, securityToken.Issuer);
+            Assert.NotNull(securityToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier));
             Assert.True(securityToken.ValidTo > DateTime.UtcNow);
         }
 
@@ -64,7 +66,7 @@ namespace Tests.Generators
             };
 
             // Act
-            var token = tokenGenerator.GenerateSecurityToken();
+            var token = tokenGenerator.GenerateSecurityToken("testUserName");
 
             // Assert
             Assert.NotNull(token);

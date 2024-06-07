@@ -1,22 +1,37 @@
 ﻿using Cerberus.Attributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cerberus.DTOs
 {
     /// <summary>
-    /// A request object containing two string fields: UserName and Password
+    /// A record containing two string fields: UserName and Password
     /// </summary>
-    public sealed class LoginRequest
+    public sealed record LoginRequest
     {
+        /// <summary>
+        /// Login request constructor.
+        /// Accepts two string parameters: userName and password
+        /// </summary>
+        /// <param name="userName"> Current user's name. String. </param>
+        /// <param name="password"> Current user's password. String. </param>
+        public LoginRequest(string userName, string password)
+        {
+            UserName = userName;
+            Password = password;
+        }
+
         /// <summary>
         /// Current user's name. String.
         /// </summary>
+        [Required]
         [DevaultValueValidation("User name not provided!")]
-        public required string UserName { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// Current user's password. String.
         /// </summary>
+        [Required]
         [DevaultValueValidation("Password not provided!")]
-        public required string Password { get; set; }
+        public string Password { get; set; }
     }
 }
