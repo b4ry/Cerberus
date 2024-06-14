@@ -1,7 +1,7 @@
-﻿using Cerberus.Attributes;
+﻿using Cerberus.Api.Attributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace Cerberus.DTOs
+namespace Cerberus.Api.DTOs
 {
     /// <summary>
     /// A record containing two string fields: UserName and Password

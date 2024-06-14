@@ -1,4 +1,4 @@
-﻿using Cerberus.Attributes;
+﻿using Cerberus.Api.Attributes;
 
 namespace Tests.Attributes
 {

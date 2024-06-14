@@ -1,4 +1,4 @@
-﻿namespace Cerberus.Constants
+﻿namespace Cerberus.Api.Constants
 {
     /// <summary>
     /// JWT configuration property constant names. Strings.

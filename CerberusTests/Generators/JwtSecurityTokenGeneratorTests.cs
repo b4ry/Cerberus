@@ -1,5 +1,5 @@
-using Cerberus.Constants;
-using Cerberus.Generators;
+using Cerberus.Api.Constants;
+using Cerberus.Api.Generators;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;

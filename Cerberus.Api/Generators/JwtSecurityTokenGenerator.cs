@@ -1,10 +1,10 @@
-﻿using Cerberus.Constants;
+﻿using Cerberus.Api.Constants;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Cerberus.Generators
+namespace Cerberus.Api.Generators
 {
     /// <summary>
     /// JWT security token generator implementing ISecurityTokenGenerator interface.

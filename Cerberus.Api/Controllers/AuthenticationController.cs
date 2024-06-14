@@ -1,9 +1,9 @@
-using Cerberus.DTOs;
-using Cerberus.Generators;
+using Cerberus.Api.DTOs;
+using Cerberus.Api.Generators;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
-namespace Cerberus.Controllers
+namespace Cerberus.Api.Controllers
 {
     /// <summary>
     /// Authentication controller handling login logic.
@@ -39,16 +39,6 @@ namespace Cerberus.Controllers
         [HttpPost]
         public IActionResult Login(LoginRequest request)
         {
-            if(!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                var errorMessage = new StringBuilder();
-
-                errorMessage.AppendJoin('\n', errors);
-
-                return BadRequest(errorMessage);
-            }
-
             _logger.LogInformation($"Logging in user {request.UserName}");
             // login process
 

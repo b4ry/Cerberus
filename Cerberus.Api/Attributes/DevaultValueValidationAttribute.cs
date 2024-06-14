@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cerberus.Attributes
+namespace Cerberus.Api.Attributes
 {
     /// <summary>
     /// Validation attribute validating whether provided value is default, or not.

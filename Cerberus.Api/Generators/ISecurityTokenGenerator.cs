@@ -1,4 +1,4 @@
-﻿namespace Cerberus.Generators
+﻿namespace Cerberus.Api.Generators
 {
     /// <summary>
     /// Security token generators' interface. It has to be implemented by all the security token generators.

@@ -1,4 +1,4 @@
-using Cerberus.Generators;
+using Cerberus.Api.Generators;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
