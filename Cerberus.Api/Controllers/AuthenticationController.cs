@@ -1,7 +1,6 @@
 using Cerberus.Api.DTOs;
 using Cerberus.Api.Generators;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
 
 namespace Cerberus.Api.Controllers
 {

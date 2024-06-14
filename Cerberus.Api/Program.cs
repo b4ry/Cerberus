@@ -1,4 +1,6 @@
 using Cerberus.Api.Generators;
+using Cerberus.DatabaseContext;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -34,6 +36,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<ISecurityTokenGenerator, JwtSecurityTokenGenerator>();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
