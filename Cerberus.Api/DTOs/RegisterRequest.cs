@@ -6,29 +6,29 @@ namespace Cerberus.Api.DTOs
     /// <summary>
     /// A record containing two string fields: Username and Password
     /// </summary>
-    public sealed record LoginRequest
+    public sealed record RegisterRequest
     {
         /// <summary>
-        /// Login request constructor.
+        /// Register request constructor.
         /// Accepts two string parameters: username and password
         /// </summary>
-        /// <param name="userame"> Current user's name. String. </param>
-        /// <param name="password"> Current user's password. String. </param>
-        public LoginRequest(string userame, string password)
+        /// <param name="username"> Registering user's name. String. </param>
+        /// <param name="password"> Registering user's password. String. </param>
+        public RegisterRequest(string username, string password)
         {
-            Username = userame;
+            Username = username;
             Password = password;
         }
 
         /// <summary>
-        /// Current user's name. String.
+        /// Registering user's name. String.
         /// </summary>
         [Required]
         [DevaultValueValidation("Username not provided!")]
         public string Username { get; set; }
 
         /// <summary>
-        /// Current user's password. String.
+        /// Registering user's password. String.
         /// </summary>
         [Required]
         [DevaultValueValidation("Password not provided!")]

@@ -1,4 +1,4 @@
-using Cerberus.Api.Generators;
+using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -53,8 +53,6 @@ using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>(
     var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
     context!.Database.Migrate();
 }
-
-app.UseAuthorization();
 
 app.MapControllers();
 

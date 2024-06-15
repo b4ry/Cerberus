@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Cerberus.Api.Generators
+namespace Cerberus.Api.Services
 {
     /// <summary>
     /// JWT security token generator implementing ISecurityTokenGenerator interface.
@@ -17,14 +17,14 @@ namespace Cerberus.Api.Generators
         /// <summary>
         /// Generates a JWT security token based on the JWT configuration key and issuer.
         /// </summary>
-        /// <param name="userName">Logging in user's name</param>
+        /// <param name="username">Logging in user's name</param>
         /// <returns>A JWT token issued by the configuration issuer, expiring in 5 minutes, signed with the configuration key.</returns>
-        public string GenerateSecurityToken(string userName)
+        public string GenerateSecurityToken(string username)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration[JwtConfigurationPropertyNames.Key]!));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, userName) };
+            var claims = new List<Claim> { new(ClaimTypes.NameIdentifier, username) };
 
             var jwtSecurityToken = new JwtSecurityToken(
                 _configuration[JwtConfigurationPropertyNames.Issuer],

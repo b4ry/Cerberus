@@ -1,5 +1,5 @@
 using Cerberus.Api.Constants;
-using Cerberus.Api.Generators;
+using Cerberus.Api.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
@@ -7,7 +7,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Tests.Generators
+namespace Tests.Services
 {
     public class JwtSecurityTokenGeneratorTests
     {
