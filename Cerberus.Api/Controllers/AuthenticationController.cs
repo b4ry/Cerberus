@@ -60,7 +60,6 @@ namespace Cerberus.Api.Controllers
         {
             _logger.LogInformation($"Logging in user {request.Username}");
             // login process
-
             string jwt = _securityTokenGenerator.GenerateSecurityToken(request.Username);
 
             return Ok(jwt);

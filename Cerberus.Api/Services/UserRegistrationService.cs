@@ -7,19 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Services
 {
-    public class UserRegistrationService : IUserRegistrationService
+    public class UserRegistrationService(
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
+        ILogger<UserRegistrationService> logger) : IUserRegistrationService
     {
-        private readonly ILogger<UserRegistrationService> _logger;
-        private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
-
-        public UserRegistrationService(IUserRepository userRepository, IUnitOfWork unitOfWork, ILogger<UserRegistrationService> logger)
-        {
-            _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
-            _logger = logger;
-        }
-
         public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
         {
             var userEntity = new UserEntity()
@@ -29,14 +21,14 @@ namespace Cerberus.Api.Services
             };
             try
             {
-                await _userRepository.AddAsync(userEntity);
-                var successfulSave = (await _unitOfWork.SaveChangesAsync()) != 0;
+                await userRepository.AddAsync(userEntity);
+                var successfulSave = (await unitOfWork.SaveChangesAsync()) != 0;
 
                 return successfulSave;
             }
             catch (DbUpdateException ex)
             {
-                _logger.LogError($"Error occured while registering user: {registerRequest.Username}. Exception: {ex}");
+                logger.LogError($"Error occured while registering user: {registerRequest.Username}. Exception: {ex}");
 
                 return false;
             }

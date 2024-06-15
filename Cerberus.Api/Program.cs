@@ -36,7 +36,17 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
-builder.Services.AddScoped<ISecurityTokenGenerator, JwtSecurityTokenGenerator>();
+builder.Services.AddScoped<JwtSecurityTokenGenerator>();
+builder.Services.AddScoped<ISecurityTokenGeneratorFactory, SecurityTokenGeneratorFactory>();
+builder.Services.AddScoped(x => {
+    var configuration = x.GetRequiredService<IConfiguration>();
+    var tokenType = configuration.GetValue<string>("TokenGenerator:Type");
+
+    var factory = x.GetRequiredService<ISecurityTokenGeneratorFactory>();
+    var tokenGenerator = factory.Create(tokenType!);
+
+    return tokenGenerator;
+});
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();

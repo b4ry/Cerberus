@@ -1,5 +1,4 @@
-﻿using Castle.Core.Logging;
-using Cerberus.Api.DTOs;
+﻿using Cerberus.Api.DTOs;
 using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
