@@ -1,6 +1,5 @@
 using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
-using Cerberus.DatabaseContext.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -47,7 +46,6 @@ builder.Services.AddScoped(x => {
 
     return tokenGenerator;
 });
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 

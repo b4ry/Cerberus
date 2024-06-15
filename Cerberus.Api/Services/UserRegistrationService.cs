@@ -1,15 +1,12 @@
-﻿using Cerberus.Api.Controllers;
-using Cerberus.Api.DTOs;
+﻿using Cerberus.Api.DTOs;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
-using Cerberus.DatabaseContext.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Services
 {
     public class UserRegistrationService(
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork,
         ILogger<UserRegistrationService> logger) : IUserRegistrationService
     {
         public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
@@ -22,7 +19,7 @@ namespace Cerberus.Api.Services
             try
             {
                 await userRepository.AddAsync(userEntity);
-                var successfulSave = (await unitOfWork.SaveChangesAsync()) != 0;
+                var successfulSave = (await userRepository.SaveChangesAsync()) != 0;
 
                 return successfulSave;
             }

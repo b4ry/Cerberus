@@ -8,5 +8,10 @@ namespace Cerberus.DatabaseContext
         {
             await applicationDbContext.AddAsync(userEntity);
         }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await applicationDbContext.SaveChangesAsync();
+        }
     }
 }
