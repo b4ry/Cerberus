@@ -1,6 +1,8 @@
 ﻿using Cerberus.Api.DTOs;
-using Cerberus.Api.Repositories;
 using Cerberus.Api.Services;
+using Cerberus.DatabaseContext;
+using Cerberus.DatabaseContext.Entities;
+using Cerberus.DatabaseContext.UnitOfWork;
 using Moq;
 
 namespace Tests.Services
@@ -8,13 +10,16 @@ namespace Tests.Services
     public class UserRegistrationServiceTests
     {
         [Fact]
-        public async Task RegisterUser_ShouldRegisterUser_WhenSuchUserDoesNotExist()
+        public async Task RegisterUserAsync_ShouldRegisterUser_WhenSuchUserDoesNotExist()
         {
             // Arrange
-            var userRepository = new Mock<IUserRepository>();
-            userRepository.Setup(x => x.AddAsync(It.IsAny<RegisterRequest>())).Returns(Task.FromResult(true));
+            var unitOfWork = new Mock<IUnitOfWork>();
+            unitOfWork.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(1));
 
-            var registerUserService = new UserRegistrationService(userRepository.Object);
+            var userRepository = new Mock<IUserRepository>();
+            userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
+
+            var registerUserService = new UserRegistrationService(userRepository.Object, unitOfWork.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
@@ -25,13 +30,16 @@ namespace Tests.Services
         }
 
         [Fact]
-        public async Task RegisterUser_ShouldNotRegisterUser_WhenSuchUserExists()
+        public async Task RegisterUserAsync_ShouldNotRegisterUser_WhenSuchUserExists()
         {
             // Arrange
-            var userRepository = new Mock<IUserRepository>();
-            userRepository.Setup(x => x.AddAsync(It.IsAny<RegisterRequest>())).Returns(Task.FromResult(false));
+            var unitOfWork = new Mock<IUnitOfWork>();
+            unitOfWork.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(0));
 
-            var registerUserService = new UserRegistrationService(userRepository.Object);
+            var userRepository = new Mock<IUserRepository>();
+            userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
+
+            var registerUserService = new UserRegistrationService(userRepository.Object, unitOfWork.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
