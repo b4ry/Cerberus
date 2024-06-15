@@ -17,14 +17,10 @@ namespace Cerberus.Api.Controllers
         ISecurityTokenGenerator securityTokenGenerator,
         IUserRegistrationService userRegistrationService) : ControllerBase
     {
-        private readonly ILogger<AuthenticationController> _logger = logger;
-        private readonly ISecurityTokenGenerator _securityTokenGenerator = securityTokenGenerator;
-        private readonly IUserRegistrationService userRegistrationService = userRegistrationService;
-
         [HttpPost]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
-            _logger.LogInformation($"Registering user {request.Username}");
+            logger.LogInformation($"Registering user {request.Username}");
 
             var userRegistered = await userRegistrationService.RegisterUserAsync(request);
 
@@ -58,9 +54,9 @@ namespace Cerberus.Api.Controllers
         [HttpPost]
         public IActionResult Login(LoginRequest request)
         {
-            _logger.LogInformation($"Logging in user {request.Username}");
+            logger.LogInformation($"Logging in user {request.Username}");
             // login process
-            string jwt = _securityTokenGenerator.GenerateSecurityToken(request.Username);
+            string jwt = securityTokenGenerator.GenerateSecurityToken(request.Username);
 
             return Ok(jwt);
         }
