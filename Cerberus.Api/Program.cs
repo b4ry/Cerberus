@@ -1,5 +1,6 @@
 using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
+using Cerberus.DatabaseContext.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
@@ -36,6 +37,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddScoped<ISecurityTokenGenerator, JwtSecurityTokenGenerator>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
