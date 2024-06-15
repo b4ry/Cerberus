@@ -11,7 +11,7 @@ namespace Cerberus.Api.Controllers
     /// <param name="securityTokenGenerator">Service generating a security token</param>
     /// <param name="userRegistrationService">Service registering a user</param>
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class AuthenticationController(
         ILogger<AuthenticationController> logger,
         ISecurityTokenGenerator securityTokenGenerator,
@@ -30,7 +30,7 @@ namespace Cerberus.Api.Controllers
 
             if(userRegistered)
             {
-                return Created();
+                return NoContent();
             }
 
             return Conflict();

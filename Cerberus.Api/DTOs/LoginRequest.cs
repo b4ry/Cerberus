@@ -12,11 +12,11 @@ namespace Cerberus.Api.DTOs
         /// Login request constructor.
         /// Accepts two string parameters: username and password
         /// </summary>
-        /// <param name="userame"> Current user's name. String. </param>
+        /// <param name="username"> Current user's name. String. </param>
         /// <param name="password"> Current user's password. String. </param>
-        public LoginRequest(string userame, string password)
+        public LoginRequest(string username, string password)
         {
-            Username = userame;
+            Username = username;
             Password = password;
         }
 

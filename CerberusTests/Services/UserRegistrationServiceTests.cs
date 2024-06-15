@@ -1,8 +1,10 @@
-﻿using Cerberus.Api.DTOs;
+﻿using Castle.Core.Logging;
+using Cerberus.Api.DTOs;
 using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
 using Cerberus.DatabaseContext.UnitOfWork;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Tests.Services
@@ -19,7 +21,9 @@ namespace Tests.Services
             var userRepository = new Mock<IUserRepository>();
             userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
 
-            var registerUserService = new UserRegistrationService(userRepository.Object, unitOfWork.Object);
+            var logger = new Mock<ILogger<UserRegistrationService>>();
+
+            var registerUserService = new UserRegistrationService(userRepository.Object, unitOfWork.Object, logger.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
@@ -39,7 +43,9 @@ namespace Tests.Services
             var userRepository = new Mock<IUserRepository>();
             userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
 
-            var registerUserService = new UserRegistrationService(userRepository.Object, unitOfWork.Object);
+            var logger = new Mock<ILogger<UserRegistrationService>>();
+
+            var registerUserService = new UserRegistrationService(userRepository.Object, unitOfWork.Object, logger.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
