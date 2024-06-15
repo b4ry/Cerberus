@@ -27,7 +27,8 @@ namespace Cerberus.DatabaseContext.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
                 table: "Users",
-                column: "Username");
+                column: "Username",
+                unique: true);
         }
 
         /// <inheritdoc />

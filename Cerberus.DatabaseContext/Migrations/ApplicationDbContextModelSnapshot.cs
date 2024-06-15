@@ -32,7 +32,8 @@ namespace Cerberus.DatabaseContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username");
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cerberus.DatabaseContext.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240614135821_InitialMigration")]
+    [Migration("20240615135742_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -35,7 +35,8 @@ namespace Cerberus.DatabaseContext.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Username");
+                    b.HasIndex("Username")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

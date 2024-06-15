@@ -10,6 +10,7 @@ namespace Tests.DatabaseContexts
         [Fact]
         public void DbContext_ShouldCreateAllModelEntities_OnItsOwnCreation()
         {
+            // Arrange
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase("testInMemoryDatabase");
             var options = builder.Options;
             var portfolioApplicationDbContext = new ApplicationDbContext(options);
@@ -17,6 +18,7 @@ namespace Tests.DatabaseContexts
 
             var modelEntities = typeof(BaseEntity).GetTypeInfo().Assembly.GetTypes().Where(x => x.GetTypeInfo().BaseType == typeof(BaseEntity));
 
+            // Act
             foreach (Type modelEntity in modelEntities)
             {
                 var modelEntityTypeName = modelEntity.GetTypeInfo().FullName;
@@ -29,6 +31,7 @@ namespace Tests.DatabaseContexts
                 }
             }
 
+            // Assert
             Assert.True(allModelEntitiesCreated, "Did not create all of the application's model entities");
         }
     }
