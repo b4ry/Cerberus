@@ -47,7 +47,7 @@ builder.Services.AddScoped(x => {
     return tokenGenerator;
 });
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUserRegistrationService, UserRegistrationService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

@@ -7,7 +7,7 @@ using Moq;
 
 namespace Tests.Services
 {
-    public class UserRegistrationServiceTests
+    public class UserServiceTests
     {
         [Fact]
         public async Task RegisterUserAsync_ShouldRegisterUser_WhenSuchUserDoesNotExist()
@@ -17,9 +17,9 @@ namespace Tests.Services
             userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
             userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(1));
 
-            var logger = new Mock<ILogger<UserRegistrationService>>();
+            var logger = new Mock<ILogger<UserService>>();
 
-            var registerUserService = new UserRegistrationService(userRepository.Object, logger.Object);
+            var registerUserService = new UserService(userRepository.Object, logger.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
@@ -37,9 +37,9 @@ namespace Tests.Services
             userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
             userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(0));
 
-            var logger = new Mock<ILogger<UserRegistrationService>>();
+            var logger = new Mock<ILogger<UserService>>();
 
-            var registerUserService = new UserRegistrationService(userRepository.Object, logger.Object);
+            var registerUserService = new UserService(userRepository.Object, logger.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act

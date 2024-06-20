@@ -10,16 +10,16 @@ namespace Tests.Controllers
     public class UserControllerTests
     {
         private UserController _controller;
-        private Mock<IUserRegistrationService> _mockRegistrationService;
-        private Mock<ILogger<UserController>> _mockLogger;
+        private Mock<IUserService> _userService;
+        private Mock<ILogger<UserController>> _logger;
         private Mock<ISecurityTokenGenerator> _securityTokenGenerator;
 
         public UserControllerTests()
         {
-            _mockRegistrationService = new Mock<IUserRegistrationService>();
-            _mockLogger = new Mock<ILogger<UserController>>();
+            _userService = new Mock<IUserService>();
+            _logger = new Mock<ILogger<UserController>>();
             _securityTokenGenerator = new Mock<ISecurityTokenGenerator>();
-            _controller = new UserController(_mockLogger.Object, _securityTokenGenerator.Object, _mockRegistrationService.Object);
+            _controller = new UserController(_logger.Object, _securityTokenGenerator.Object, _userService.Object);
         }
 
         [Fact]
@@ -27,14 +27,14 @@ namespace Tests.Controllers
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            _mockRegistrationService.Setup(svc => svc.RegisterUserAsync(request)).ReturnsAsync(true);
+            _userService.Setup(x => x.RegisterUserAsync(request)).ReturnsAsync(true);
 
             // Act
             var result = await _controller.Register(request);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
-            _mockRegistrationService.Verify(svc => svc.RegisterUserAsync(request), Times.Once);
+            _userService.Verify(x => x.RegisterUserAsync(request), Times.Once);
         }
 
         [Fact]
@@ -42,32 +42,53 @@ namespace Tests.Controllers
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            _mockRegistrationService.Setup(svc => svc.RegisterUserAsync(request)).ReturnsAsync(false);
+            _userService.Setup(x => x.RegisterUserAsync(request)).ReturnsAsync(false);
 
             // Act
             var result = await _controller.Register(request);
 
             // Assert
             Assert.IsType<ConflictObjectResult>(result);
-            _mockRegistrationService.Verify(svc => svc.RegisterUserAsync(request), Times.Once);
+            _userService.Verify(x => x.RegisterUserAsync(request), Times.Once);
         }
 
         [Fact]
-        public void Login_ShouldReturnJWT_WhenValidRequestAndSuccessfulLogin()
+        public async void Login_ShouldReturnJWT_WhenValidRequestAndSuccessfulLogin()
         {
             // Arrange
             var request = new LoginRequest("testUsername", "testPassword");
             var jwtToken = "testJWT";
 
-            _securityTokenGenerator.Setup(svc => svc.GenerateSecurityToken(request.Username)).Returns(jwtToken);
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(jwtToken);
+            _userService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(true);
 
             // Act
-            var result = _controller.Login(request);
+            var result = await _controller.Login(request);
 
             // Assert
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal("testJWT", jwtToken);
+            _userService.Verify(x => x.LoginUserAsync(request), Times.Once);
             _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Once);
+        }
+
+        [Fact]
+        public async void Login_ShouldReturnUnauthorized_WhenValidRequestAndUnsuccessfulLogin()
+        {
+            // Arrange
+            var request = new LoginRequest("testUsername", "testPassword");
+            var jwtToken = "testJWT";
+
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(jwtToken);
+            _userService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(false);
+
+            // Act
+            var result = await _controller.Login(request);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+            _userService.Verify(x => x.LoginUserAsync(request), Times.Once);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Never);
         }
     }
 }

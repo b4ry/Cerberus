@@ -9,13 +9,13 @@ namespace Cerberus.Api.Controllers
     /// </summary>
     /// <param name="logger">The controller information logger</param>
     /// <param name="securityTokenGenerator">Service generating a security token</param>
-    /// <param name="userRegistrationService">Service registering a user</param>
+    /// <param name="userService">Service managing users</param>
     [ApiController]
     [Route("api/[controller]/[action]")]
     public class UserController(
         ILogger<UserController> logger,
         ISecurityTokenGenerator securityTokenGenerator,
-        IUserRegistrationService userRegistrationService) : ControllerBase
+        IUserService userService) : ControllerBase
     {
         /// <summary>
         /// Creates a new user in the database. If the user exists, returns conflict with a message.
@@ -43,14 +43,14 @@ namespace Cerberus.Api.Controllers
         {
             logger.LogInformation($"Registering user {request.Username}");
 
-            var userRegistered = await userRegistrationService.RegisterUserAsync(request);
+            var userRegistered = await userService.RegisterUserAsync(request);
 
             if(userRegistered)
             {
                 return NoContent();
             }
 
-            return Conflict("User already exists.");
+            return Conflict("User already exist.");
         }
 
         /// <summary>
@@ -73,13 +73,20 @@ namespace Cerberus.Api.Controllers
         /// <response code="200">Returns a JWT</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
         [HttpPost]
-        public IActionResult Login(LoginRequest request)
+        public async Task<IActionResult> Login(LoginRequest request)
         {
             logger.LogInformation($"Logging in user {request.Username}");
-            // login process
-            string jwt = securityTokenGenerator.GenerateSecurityToken(request.Username);
 
-            return Ok(jwt);
+            var loggedIn = await userService.LoginUserAsync(request);
+
+            if (loggedIn)
+            {
+                string jwt = securityTokenGenerator.GenerateSecurityToken(request.Username);
+
+                return Ok(jwt);
+            }
+
+            return Unauthorized();
         }
     }
 }
