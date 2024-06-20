@@ -9,21 +9,28 @@ namespace Tests.Services
 {
     public class UserServiceTests
     {
+        private readonly Mock<IUserRepository> _userRepository;
+        private readonly Mock<ILogger<UserService>> _logger;
+        private readonly IUserService _userService;
+
+        public UserServiceTests()
+        {
+            _userRepository = new Mock<IUserRepository>();
+            _logger = new Mock<ILogger<UserService>>();
+            _userService = new UserService(_userRepository.Object, _logger.Object);
+        }
+
         [Fact]
         public async Task RegisterUserAsync_ShouldRegisterUser_WhenSuchUserDoesNotExist()
         {
             // Arrange
-            var userRepository = new Mock<IUserRepository>();
-            userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
-            userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(1));
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
+            _userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(1));
 
-            var logger = new Mock<ILogger<UserService>>();
-
-            var registerUserService = new UserService(userRepository.Object, logger.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
-            var result = await registerUserService.RegisterUserAsync(registerRequest);
+            var result = await _userService.RegisterUserAsync(registerRequest);
 
             // Assert
             Assert.True(result);
@@ -33,17 +40,13 @@ namespace Tests.Services
         public async Task RegisterUserAsync_ShouldNotRegisterUser_WhenSuchUserExists()
         {
             // Arrange
-            var userRepository = new Mock<IUserRepository>();
-            userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
-            userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(0));
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
+            _userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(0));
 
-            var logger = new Mock<ILogger<UserService>>();
-
-            var registerUserService = new UserService(userRepository.Object, logger.Object);
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
-            var result = await registerUserService.RegisterUserAsync(registerRequest);
+            var result = await _userService.RegisterUserAsync(registerRequest);
 
             // Assert
             Assert.False(result);
