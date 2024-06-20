@@ -11,14 +11,12 @@ namespace Tests.Services
     public class UserServiceTests
     {
         private readonly Mock<IUserRepository> _userRepository;
-        private readonly Mock<ILogger<UserService>> _logger;
         private readonly IUserService _userService;
 
         public UserServiceTests()
         {
             _userRepository = new Mock<IUserRepository>();
-            _logger = new Mock<ILogger<UserService>>();
-            _userService = new UserService(_userRepository.Object, _logger.Object);
+            _userService = new UserService(_userRepository.Object);
         }
 
         [Fact]

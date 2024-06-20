@@ -39,6 +39,7 @@ namespace Cerberus.Api.Controllers
         /// <response code="204">When registered a user</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
         /// <response code="409">When user exists</response>
+        /// <response code="500">Internal server error</response>
         [HttpPost]
         public async Task<IActionResult> Register(RegisterRequest request)
         {
@@ -47,10 +48,6 @@ namespace Cerberus.Api.Controllers
             try
             {
                 await userService.RegisterUserAsync(request);
-            }
-            catch(DbUpdateException)
-            {
-                return Conflict("User already exist.");
             }
             catch(Exception)
             {
@@ -79,6 +76,7 @@ namespace Cerberus.Api.Controllers
         /// </remarks>
         /// <response code="200">Returns a JWT</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
+        /// <response code="500">Internal server error</response>
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequest request)
         {

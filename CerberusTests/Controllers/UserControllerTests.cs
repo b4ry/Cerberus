@@ -39,17 +39,14 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        public async Task Register_ShouldReturnConflict_WhenValidRequestAndUserExists()
+        public async Task Register_ShouldThrowException_WhenValidRequestAndUserExists()
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            _userService.Setup(x => x.RegisterUserAsync(request)).ThrowsAsync(new DbUpdateException());
+            _userService.Setup(x => x.RegisterUserAsync(request)).ThrowsAsync(new Exception());
 
             // Act
-            var result = await _controller.Register(request);
-
-            // Assert
-            Assert.IsType<ConflictObjectResult>(result);
+            await Assert.ThrowsAnyAsync<Exception>(() => _controller.Register(request));
             _userService.Verify(x => x.RegisterUserAsync(request), Times.Once);
         }
 

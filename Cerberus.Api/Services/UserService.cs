@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Services
 {
-    public class UserService(IUserRepository userRepository, ILogger<UserService> logger) : IUserService
+    public class UserService(IUserRepository userRepository) : IUserService
     {
         public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
         {
@@ -19,15 +19,9 @@ namespace Cerberus.Api.Services
             {
                 return await userRepository.AddAsync(userEntity);
             }
-            catch (DbUpdateException ex)
-            {
-                logger.LogError($"Error occured while registering user: {registerRequest.Username}. Exception: {ex}");
-
-                throw;
-            }
             catch (Exception ex)
             {
-                logger.LogError($"Error occured while registering user: {registerRequest.Username}. Exception: {ex}");
+                ex.Data.Add("RegisterUser", $"Error occured while registering user: {registerRequest.Username}");
 
                 throw;
             }
