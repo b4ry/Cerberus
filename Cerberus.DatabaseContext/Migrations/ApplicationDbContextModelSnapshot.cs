@@ -18,22 +18,14 @@ namespace Cerberus.DatabaseContext.Migrations
 
             modelBuilder.Entity("Cerberus.DatabaseContext.Entities.UserEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Username")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
+                    b.HasKey("Username");
 
                     b.ToTable("Users");
                 });

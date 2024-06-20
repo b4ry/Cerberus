@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Cerberus.DatabaseContext.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240615135742_InitialMigration")]
+    [Migration("20240620151250_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -21,22 +21,14 @@ namespace Cerberus.DatabaseContext.Migrations
 
             modelBuilder.Entity("Cerberus.DatabaseContext.Entities.UserEntity", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Username")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Username")
-                        .IsUnique();
+                    b.HasKey("Username");
 
                     b.ToTable("Users");
                 });
