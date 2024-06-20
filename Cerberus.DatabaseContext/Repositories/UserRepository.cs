@@ -9,6 +9,11 @@ namespace Cerberus.DatabaseContext
             await applicationDbContext.AddAsync(userEntity);
         }
 
+        public async Task<UserEntity?> FindAsync(string username)
+        {
+            return await applicationDbContext.FindAsync<UserEntity>(username);
+        }
+
         public async Task<int> SaveChangesAsync()
         {
             return await applicationDbContext.SaveChangesAsync();

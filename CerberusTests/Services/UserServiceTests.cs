@@ -51,5 +51,52 @@ namespace Tests.Services
             // Assert
             Assert.False(result);
         }
+
+        [Fact]
+        public async Task LoginUserAsync_ShouldLogsInUser_WhenSuchUserExistsAndCredentialsAreCorrect()
+        {
+            // Arrange
+            var registerRequest = new LoginRequest("testUser", "testPassword");
+            var userEntity = new UserEntity() { Username = "testUser", Password = "testPassword" };
+
+            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity));
+
+            // Act
+            var result = await _userService.LoginUserAsync(registerRequest);
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public async Task LoginUserAsync_ShouldNotLogInUser_WhenSuchUserDoesNotExist()
+        {
+            // Arrange
+            var registerRequest = new LoginRequest("testUser", "testPassword");
+
+            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(new Mock<UserEntity>().Object));
+
+            // Act
+            var result = await _userService.LoginUserAsync(registerRequest);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task LoginUserAsync_ShouldNotLogInUser_WhenSuchUserExistsAndInvalidCredentials()
+        {
+            // Arrange
+            var registerRequest = new LoginRequest("testUser", "testPassword");
+            var userEntity = new UserEntity() { Username = "testUser", Password = "testPassword1" };
+
+            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity));
+
+            // Act
+            var result = await _userService.LoginUserAsync(registerRequest);
+
+            // Assert
+            Assert.False(result);
+        }
     }
 }

@@ -5,9 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Services
 {
-    public class UserService(
-        IUserRepository userRepository,
-        ILogger<UserService> logger) : IUserService
+    public class UserService(IUserRepository userRepository, ILogger<UserService> logger) : IUserService
     {
         public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
         {
@@ -32,9 +30,16 @@ namespace Cerberus.Api.Services
             }
         }
 
-        public Task<bool> LoginUserAsync(LoginRequest loginRequest)
+        public async Task<bool> LoginUserAsync(LoginRequest loginRequest)
         {
-            throw new NotImplementedException();
+            var user = await userRepository.FindAsync(loginRequest.Username);
+
+            if(user != null && user.Password == loginRequest.Password)
+            {
+                return true;
+            }
+
+            return false;
         }
 
     }
