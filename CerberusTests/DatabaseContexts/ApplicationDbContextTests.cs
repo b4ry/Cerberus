@@ -13,7 +13,7 @@ namespace Tests.DatabaseContexts
             // Arrange
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase("testInMemoryDatabase");
             var options = builder.Options;
-            var portfolioApplicationDbContext = new ApplicationDbContext(options);
+            var applicationDbContext = new ApplicationDbContext(options);
             var allModelEntitiesCreated = true;
 
             var modelEntities = typeof(BaseEntity).GetTypeInfo().Assembly.GetTypes().Where(x => x.GetTypeInfo().BaseType == typeof(BaseEntity));
@@ -22,7 +22,7 @@ namespace Tests.DatabaseContexts
             foreach (Type modelEntity in modelEntities)
             {
                 var modelEntityTypeName = modelEntity.GetTypeInfo().FullName;
-                var foundEntityType = portfolioApplicationDbContext.Model.FindEntityType(modelEntityTypeName);
+                var foundEntityType = applicationDbContext.Model.FindEntityType(modelEntityTypeName);
 
                 if (foundEntityType == null)
                 {

@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Cerberus.DatabaseContext.Entities
 {
     [Table("Users")]
-    [Index(nameof(Username), IsUnique = true)]
+    [PrimaryKey("Username")]
     public class UserEntity : BaseEntity
     {
         [Required]

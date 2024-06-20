@@ -2,6 +2,7 @@
 using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -25,7 +26,6 @@ namespace Tests.Services
         {
             // Arrange
             _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
-            _userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(1));
 
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
@@ -41,7 +41,6 @@ namespace Tests.Services
         {
             // Arrange
             _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
-            _userRepository.Setup(x => x.SaveChangesAsync()).Returns(Task.FromResult(0));
 
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
@@ -50,6 +49,30 @@ namespace Tests.Services
 
             // Assert
             Assert.False(result);
+        }
+
+        [Fact]
+        public async Task RegisterUserAsync_ShouldRethrowDbUpdateException_WhenUserExistsAndReadded()
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).ThrowsAsync(new DbUpdateException());
+
+            var registerRequest = new RegisterRequest("testUser", "testPassword");
+
+            // Act && Assert
+            await Assert.ThrowsAnyAsync<DbUpdateException>(() => _userService.RegisterUserAsync(registerRequest));
+        }
+
+        [Fact]
+        public async Task RegisterUserAsync_ShouldRethrowGeneralException()
+        {
+            // Arrange
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).ThrowsAsync(new Exception());
+
+            var registerRequest = new RegisterRequest("testUser", "testPassword");
+
+            // Act && Assert
+            await Assert.ThrowsAnyAsync<Exception>(() => _userService.RegisterUserAsync(registerRequest));
         }
 
         [Fact]

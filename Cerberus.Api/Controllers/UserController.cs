@@ -1,6 +1,7 @@
 using Cerberus.Api.DTOs;
 using Cerberus.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Controllers
 {
@@ -43,14 +44,20 @@ namespace Cerberus.Api.Controllers
         {
             logger.LogInformation($"Registering user {request.Username}");
 
-            var userRegistered = await userService.RegisterUserAsync(request);
-
-            if(userRegistered)
+            try
             {
-                return NoContent();
+                await userService.RegisterUserAsync(request);
             }
-
-            return Conflict("User already exist.");
+            catch(DbUpdateException)
+            {
+                return Conflict("User already exist.");
+            }
+            catch(Exception)
+            {
+                throw;
+            }
+            
+            return NoContent();
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using Cerberus.Api.DTOs;
 using Cerberus.Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -9,10 +10,10 @@ namespace Tests.Controllers
 {
     public class UserControllerTests
     {
-        private UserController _controller;
-        private Mock<IUserService> _userService;
-        private Mock<ILogger<UserController>> _logger;
-        private Mock<ISecurityTokenGenerator> _securityTokenGenerator;
+        private readonly UserController _controller;
+        private readonly Mock<IUserService> _userService;
+        private readonly Mock<ILogger<UserController>> _logger;
+        private readonly Mock<ISecurityTokenGenerator> _securityTokenGenerator;
 
         public UserControllerTests()
         {
@@ -42,7 +43,7 @@ namespace Tests.Controllers
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            _userService.Setup(x => x.RegisterUserAsync(request)).ReturnsAsync(false);
+            _userService.Setup(x => x.RegisterUserAsync(request)).ThrowsAsync(new DbUpdateException());
 
             // Act
             var result = await _controller.Register(request);

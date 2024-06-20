@@ -17,16 +17,19 @@ namespace Cerberus.Api.Services
 
             try
             {
-                await userRepository.AddAsync(userEntity);
-                var successfulSave = (await userRepository.SaveChangesAsync()) != 0;
-
-                return successfulSave;
+                return await userRepository.AddAsync(userEntity);
             }
             catch (DbUpdateException ex)
             {
                 logger.LogError($"Error occured while registering user: {registerRequest.Username}. Exception: {ex}");
 
-                return false;
+                throw;
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error occured while registering user: {registerRequest.Username}. Exception: {ex}");
+
+                throw;
             }
         }
 
