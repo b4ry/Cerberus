@@ -11,17 +11,22 @@ namespace Tests.Services
 {
     public class JwtSecurityTokenGeneratorTests
     {
+        private readonly Mock<IConfiguration> _configuration;
+        private const string secretIssuer = "secretIssuer.com";
+
+        public JwtSecurityTokenGeneratorTests()
+        {
+            _configuration = new Mock<IConfiguration>();        
+        }
+
         [Fact]
         public void GenerateSecurityToken_ShouldReturnJwtTokenWithCorrectProperties()
         {
             // Arrange
-            var mockConfiguration = new Mock<IConfiguration>();
-            var secretIssuer = "secretIssuer.com";
+            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Key]).Returns("TestSecurityKeyForAuthentication");
+            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Issuer]).Returns(secretIssuer);
 
-            mockConfiguration.SetupGet(config => config[JwtConfigurationPropertyNames.Key]).Returns("TestSecurityKeyForAuthentication");
-            mockConfiguration.SetupGet(config => config[JwtConfigurationPropertyNames.Issuer]).Returns(secretIssuer);
-
-            var tokenGenerator = new JwtSecurityTokenGenerator(mockConfiguration.Object);
+            var tokenGenerator = new JwtSecurityTokenGenerator(_configuration.Object);
 
             // Act
             var token = tokenGenerator.GenerateSecurityToken("testUserName");
@@ -43,14 +48,12 @@ namespace Tests.Services
         public void GenerateSecurityToken_ShouldReturnValidJwtToken()
         {
             // Arrange
-            var mockConfiguration = new Mock<IConfiguration>();
-            var secretIssuer = "secretIssuer.com";
             var secretKey = "TestSecurityKeyForAuthentication";
 
-            mockConfiguration.SetupGet(config => config[JwtConfigurationPropertyNames.Key]).Returns(secretKey);
-            mockConfiguration.SetupGet(config => config[JwtConfigurationPropertyNames.Issuer]).Returns(secretIssuer);
+            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Key]).Returns(secretKey);
+            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Issuer]).Returns(secretIssuer);
 
-            var tokenGenerator = new JwtSecurityTokenGenerator(mockConfiguration.Object);
+            var tokenGenerator = new JwtSecurityTokenGenerator(_configuration.Object);
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
