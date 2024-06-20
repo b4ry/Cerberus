@@ -1,9 +1,12 @@
 using Cerberus.Api.Middlewares;
+using Cerberus.Api.Options;
 using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,6 +53,19 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+var rateLimitConfigurationSection = new RateLimitConfigurationSection();
+builder.Configuration.GetSection("RateLimitOptions").Bind(rateLimitConfigurationSection);
+
+builder.Services.AddRateLimiter(_ => _
+    .AddSlidingWindowLimiter(policyName: rateLimitConfigurationSection.PolicyName, options =>
+    {
+        options.PermitLimit = rateLimitConfigurationSection.PermitLimit;
+        options.Window = TimeSpan.FromSeconds(rateLimitConfigurationSection.Window);
+        options.SegmentsPerWindow = rateLimitConfigurationSection.SegmentsPerWindow;
+        options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        options.QueueLimit = rateLimitConfigurationSection.QueueLimit;
+    }));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -66,6 +82,7 @@ using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>(
 }
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
-app.MapControllers();
+app.UseRateLimiter();
+app.MapControllers().RequireRateLimiting(rateLimitConfigurationSection.PolicyName); ;
 
 app.Run();
