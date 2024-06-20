@@ -8,7 +8,7 @@ namespace Tests.DatabaseContexts
     public class ApplicationDbContextTests
     {
         [Fact]
-        public void DbContext_ShouldCreateAllModelEntities_OnItsOwnCreation()
+        public void DbContext_ShouldCreateAllModelEntities()
         {
             // Arrange
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>().UseInMemoryDatabase("testInMemoryDatabase");
