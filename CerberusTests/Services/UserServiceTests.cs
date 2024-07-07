@@ -1,5 +1,6 @@
 ﻿using Cerberus.Api.DTOs;
 using Cerberus.Api.Services;
+using Cerberus.Api.Services.Interfaces;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
 using Microsoft.EntityFrameworkCore;

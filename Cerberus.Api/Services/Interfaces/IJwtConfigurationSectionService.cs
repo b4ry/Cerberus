@@ -1,6 +1,6 @@
 ﻿using Cerberus.Api.ConfigurationSections;
 
-namespace Cerberus.Api.Services
+namespace Cerberus.Api.Services.Interfaces
 {
     public interface IJwtConfigurationSectionService
     {

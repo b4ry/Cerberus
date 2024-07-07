@@ -1,6 +1,6 @@
 ﻿using Cerberus.Api.DTOs;
 
-namespace Cerberus.Api.Services
+namespace Cerberus.Api.Services.Interfaces
 {
     public interface IUserService
     {

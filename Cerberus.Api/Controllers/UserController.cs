@@ -1,5 +1,5 @@
 using Cerberus.Api.DTOs;
-using Cerberus.Api.Services;
+using Cerberus.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

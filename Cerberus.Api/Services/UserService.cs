@@ -1,11 +1,11 @@
 ﻿using Cerberus.Api.DTOs;
+using Cerberus.Api.Services.Interfaces;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Services
 {
-    public class UserService(IUserRepository userRepository) : IUserService
+    public class UserService(IUserRepository userRepository, IPasswordService passwordService) : IUserService
     {
         public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
         {
@@ -17,6 +17,8 @@ namespace Cerberus.Api.Services
 
             try
             {
+                var salt = passwordService.GenerateSalt();
+
                 return await userRepository.AddAsync(userEntity);
             }
             catch (Exception ex)

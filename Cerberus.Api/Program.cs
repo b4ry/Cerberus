@@ -1,6 +1,7 @@
 using Cerberus.Api.Middlewares;
 using Cerberus.Api.Options;
 using Cerberus.Api.Services;
+using Cerberus.Api.Services.Interfaces;
 using Cerberus.DatabaseContext;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +52,7 @@ builder.Services.AddScoped(x => {
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IJwtConfigurationSectionService, JwtConfigurationSectionService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 

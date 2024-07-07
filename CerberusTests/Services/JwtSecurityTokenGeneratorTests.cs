@@ -1,7 +1,6 @@
 using Cerberus.Api.ConfigurationSections;
-using Cerberus.Api.Constants;
 using Cerberus.Api.Services;
-using Microsoft.Extensions.Configuration;
+using Cerberus.Api.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.IdentityModel.Tokens.Jwt;

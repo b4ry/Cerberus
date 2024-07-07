@@ -1,4 +1,4 @@
-﻿namespace Cerberus.Api.Services
+﻿namespace Cerberus.Api.Services.Interfaces
 {
     public interface ISecurityTokenGeneratorFactory
     {

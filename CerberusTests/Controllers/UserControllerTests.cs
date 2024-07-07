@@ -1,6 +1,6 @@
 ﻿using Cerberus.Api.Controllers;
 using Cerberus.Api.DTOs;
-using Cerberus.Api.Services;
+using Cerberus.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

@@ -1,4 +1,5 @@
 ﻿using Cerberus.Api.ConfigurationSections;
+using Cerberus.Api.Services.Interfaces;
 
 namespace Cerberus.Api.Services
 {
