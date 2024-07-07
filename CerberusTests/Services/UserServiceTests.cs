@@ -3,7 +3,6 @@ using Cerberus.Api.Services;
 using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Tests.Services

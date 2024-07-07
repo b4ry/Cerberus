@@ -1,3 +1,4 @@
+using Cerberus.Api.ConfigurationSections;
 using Cerberus.Api.Constants;
 using Cerberus.Api.Services;
 using Microsoft.Extensions.Configuration;
@@ -11,22 +12,26 @@ namespace Tests.Services
 {
     public class JwtSecurityTokenGeneratorTests
     {
-        private readonly Mock<IConfiguration> _configuration;
+        private readonly Mock<IJwtConfigurationSectionService> _jwtConfigurationSectionService;
         private const string secretIssuer = "secretIssuer.com";
+        private const string secretKey = "TestSecurityKeyForAuthentication";
 
         public JwtSecurityTokenGeneratorTests()
         {
-            _configuration = new Mock<IConfiguration>();        
+            _jwtConfigurationSectionService = new Mock<IJwtConfigurationSectionService>();        
         }
 
         [Fact]
         public void GenerateSecurityToken_ShouldReturnJwtTokenWithCorrectProperties()
         {
             // Arrange
-            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Key]).Returns("TestSecurityKeyForAuthentication");
-            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Issuer]).Returns(secretIssuer);
+            _jwtConfigurationSectionService.Setup(x => x.GetJwtConfigurationSection()).Returns(new JwtConfigurationSection
+            {
+                Key = secretKey,
+                Issuer = secretIssuer
+            });
 
-            var tokenGenerator = new JwtSecurityTokenGenerator(_configuration.Object);
+            var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object);
 
             // Act
             var token = tokenGenerator.GenerateSecurityToken("testUserName");
@@ -48,12 +53,15 @@ namespace Tests.Services
         public void GenerateSecurityToken_ShouldReturnValidJwtToken()
         {
             // Arrange
-            var secretKey = "TestSecurityKeyForAuthentication";
+            
 
-            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Key]).Returns(secretKey);
-            _configuration.SetupGet(config => config[JwtConfigurationPropertyNames.Issuer]).Returns(secretIssuer);
+            _jwtConfigurationSectionService.Setup(x => x.GetJwtConfigurationSection()).Returns(new JwtConfigurationSection
+            {
+                Key = secretKey,
+                Issuer = secretIssuer
+            });
 
-            var tokenGenerator = new JwtSecurityTokenGenerator(_configuration.Object);
+            var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object);
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
