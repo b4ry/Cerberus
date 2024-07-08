@@ -1,7 +1,7 @@
 ﻿using Cerberus.Api.DTOs;
 using Cerberus.Api.Services.Interfaces;
-using Cerberus.DatabaseContext;
 using Cerberus.DatabaseContext.Entities;
+using Cerberus.DatabaseContext.Repositories.Interfaces;
 
 namespace Cerberus.Api.Services
 {

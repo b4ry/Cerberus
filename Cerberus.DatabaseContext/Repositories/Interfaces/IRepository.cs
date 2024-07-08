@@ -1,6 +1,6 @@
 ﻿using Cerberus.DatabaseContext.Entities;
 
-namespace Cerberus.DatabaseContext
+namespace Cerberus.DatabaseContext.Repositories.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity
     {

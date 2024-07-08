@@ -3,6 +3,7 @@ using Cerberus.Api.Options;
 using Cerberus.Api.Services;
 using Cerberus.Api.Services.Interfaces;
 using Cerberus.DatabaseContext;
+using Cerberus.DatabaseContext.Repositories.Interfaces;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;

@@ -5,7 +5,7 @@ namespace Tests.Services
     public class PasswordServiceTests
     {
         [Fact]
-        public void GenerateSalt_ShouldGenerateString()
+        public void GenerateSalt_ShouldReturnString()
         {
             // arrange
             var passwordService = new PasswordService();

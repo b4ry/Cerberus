@@ -1,4 +1,5 @@
 ﻿using Cerberus.DatabaseContext.Entities;
+using Cerberus.DatabaseContext.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.DatabaseContext
