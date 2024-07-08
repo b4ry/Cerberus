@@ -87,7 +87,7 @@ namespace Tests.Services
                 Salt = "testSalt"
             };
 
-            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity));
+            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity)!);
 
             // Act
             var result = await _userService.LoginUserAsync(registerRequest);
@@ -102,7 +102,7 @@ namespace Tests.Services
             // Arrange
             var registerRequest = new LoginRequest("testUser", "testPassword");
 
-            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(new Mock<UserEntity>().Object));
+            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(new Mock<UserEntity>().Object)!);
 
             // Act
             var result = await _userService.LoginUserAsync(registerRequest);
@@ -123,7 +123,7 @@ namespace Tests.Services
                 Salt = "testSalt"
             };
 
-            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity));
+            _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity)!);
 
             // Act
             var result = await _userService.LoginUserAsync(registerRequest);
