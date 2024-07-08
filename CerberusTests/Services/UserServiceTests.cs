@@ -18,6 +18,8 @@ namespace Tests.Services
         {
             _userRepository = new Mock<IUserRepository>();
             _passwordService = new Mock<IPasswordService>();
+            _passwordService.Setup(x => x.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("testPassword");
+
             _userService = new UserService(_userRepository.Object, _passwordService.Object);
         }
 

@@ -9,16 +9,17 @@ namespace Cerberus.Api.Services
     {
         public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
         {
-            var userEntity = new UserEntity()
-            {
-                Username = registerRequest.Username,
-                Password = registerRequest.Password,
-                Salt = passwordService.GenerateSalt()
-            };
-
             try
             {
-                var hash = passwordService.HashPassword(userEntity.Password, userEntity.Salt);
+                var salt = passwordService.GenerateSalt();
+                var hashedPassword = passwordService.HashPassword(registerRequest.Password, salt);
+
+                var userEntity = new UserEntity()
+                {
+                    Username = registerRequest.Username,
+                    Password = hashedPassword,
+                    Salt = salt
+                };
 
                 return await userRepository.AddAsync(userEntity);
             }
@@ -34,9 +35,14 @@ namespace Cerberus.Api.Services
         {
             var user = await userRepository.FindAsync(loginRequest.Username);
 
-            if(user != null && user.Password == loginRequest.Password)
+            if (user != null)
             {
-                return true;
+                var hash = passwordService.HashPassword(loginRequest.Password, user.Salt);
+
+                if (hash == user.Password)
+                {
+                    return true;
+                }
             }
 
             return false;
