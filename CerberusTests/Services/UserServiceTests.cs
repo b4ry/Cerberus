@@ -80,7 +80,12 @@ namespace Tests.Services
         {
             // Arrange
             var registerRequest = new LoginRequest("testUser", "testPassword");
-            var userEntity = new UserEntity() { Username = "testUser", Password = "testPassword" };
+            var userEntity = new UserEntity()
+            {
+                Username = "testUser",
+                Password = "testPassword",
+                Salt = "testSalt"
+            };
 
             _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity));
 
@@ -111,7 +116,12 @@ namespace Tests.Services
         {
             // Arrange
             var registerRequest = new LoginRequest("testUser", "testPassword");
-            var userEntity = new UserEntity() { Username = "testUser", Password = "testPassword1" };
+            var userEntity = new UserEntity()
+            {
+                Username = "testUser",
+                Password = "testPassword1",
+                Salt = "testSalt"
+            };
 
             _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity));
 

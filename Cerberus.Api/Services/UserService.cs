@@ -12,12 +12,13 @@ namespace Cerberus.Api.Services
             var userEntity = new UserEntity()
             {
                 Username = registerRequest.Username,
-                Password = registerRequest.Password
+                Password = registerRequest.Password,
+                Salt = passwordService.GenerateSalt()
             };
 
             try
             {
-                var salt = passwordService.GenerateSalt();
+                var hash = passwordService.HashPassword(userEntity.Password, userEntity.Salt);
 
                 return await userRepository.AddAsync(userEntity);
             }

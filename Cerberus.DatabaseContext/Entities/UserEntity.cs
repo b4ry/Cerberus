@@ -13,5 +13,8 @@ namespace Cerberus.DatabaseContext.Entities
 
         [Required]
         public required string Password { get; set; }
+
+        [Required]
+        public required string Salt { get; set; }
     }
 }
