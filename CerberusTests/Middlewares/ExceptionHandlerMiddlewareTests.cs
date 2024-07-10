@@ -1,4 +1,5 @@
-﻿using Cerberus.Api.Middlewares;
+﻿using Cerberus.Api.Constants;
+using Cerberus.Api.Middlewares;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ namespace Tests.Middlewares
         }
 
         [Fact]
-        public async Task Invoke_ShouldSetResponseStatusCodeTo500_WhenGeneralExceptionOccured()
+        public async Task Invoke_ShouldSetResponseStatusCodeTo500_WhenGeneralExceptionOccurs()
         {
             // Arrange
             var nextDelegate = new RequestDelegate((HttpContext context) =>
@@ -37,7 +38,7 @@ namespace Tests.Middlewares
         }
 
         [Fact]
-        public async Task Invoke_ShouldSetResponseMessageToException_WhenExceptionOccured()
+        public async Task Invoke_ShouldSetResponseMessageToException_WhenExceptionOccurs()
         {
             // Arrange
             var nextDelegate = new RequestDelegate((HttpContext context) =>
@@ -72,7 +73,10 @@ namespace Tests.Middlewares
             // Arrange
             var nextDelegate = new RequestDelegate((HttpContext context) =>
             {
-                throw new DbUpdateException();
+                throw new DbUpdateException(
+                    "exception!",
+                    innerException: new Microsoft.Data.Sqlite.SqliteException("FAILS!", 19, (int)SqliteErrors.ConstraintPrimaryKey)
+                );
             });
 
             var exceptionHandlerMiddleware = new ExceptionHandlerMiddleware(nextDelegate, _logger.Object);

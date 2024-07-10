@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Cerberus.Api.Constants;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -25,8 +27,13 @@ namespace Cerberus.Api.Middlewares
             {
                 if(ex is DbUpdateException)
                 {
-                    // TODO: Check for specific inner exceptions; they differ based on the db used
-                    context.Response.StatusCode = StatusCodes.Status409Conflict;
+                    if (ex.InnerException is SqliteException sqliteException)
+                    {
+                        if (sqliteException!.SqliteExtendedErrorCode == (int)SqliteErrors.ConstraintPrimaryKey)
+                        {
+                            context.Response.StatusCode = StatusCodes.Status409Conflict;
+                        }
+                    }
                 }
                 else
                 {
