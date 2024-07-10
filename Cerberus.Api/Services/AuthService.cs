@@ -5,9 +5,18 @@ using Cerberus.DatabaseContext.Repositories.Interfaces;
 
 namespace Cerberus.Api.Services
 {
-    public class UserService(IUserRepository userRepository, IPasswordService passwordService) : IUserService
+    /// <summary>
+    /// Handles users' authentication and authorization logic.
+    /// </summary>
+    /// <param name="userRepository">User repository handling user entity</param>
+    /// <param name="passwordService">Password service handling password related logic like hashing, salting</param>
+    public class AuthService(IUserRepository userRepository, IPasswordService passwordService) : IAuthService
     {
-        public async Task<bool> RegisterUserAsync(RegisterRequest registerRequest)
+        /// <summary>
+        /// Registers users. If a user already exists, then the underlying exception, enriched with some additional information, is being re-thrown.
+        /// </summary>
+        /// <param name="registerRequest">Request for user registration</param>
+        public async Task RegisterUserAsync(RegisterRequest registerRequest)
         {
             try
             {
@@ -21,7 +30,7 @@ namespace Cerberus.Api.Services
                     Salt = salt
                 };
 
-                return await userRepository.AddAsync(userEntity);
+                await userRepository.AddAsync(userEntity);
             }
             catch (Exception ex)
             {
@@ -31,6 +40,14 @@ namespace Cerberus.Api.Services
             }
         }
 
+        /// <summary>
+        /// Logins users validating with a salt technique.
+        /// </summary>
+        /// <param name="loginRequest">Request for login a user</param>
+        /// <returns>
+        ///     True when successful,
+        ///     False when fails
+        /// </returns>
         public async Task<bool> LoginUserAsync(LoginRequest loginRequest)
         {
             var user = await userRepository.FindAsync(loginRequest.Username);

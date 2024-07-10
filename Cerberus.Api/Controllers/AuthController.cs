@@ -1,22 +1,21 @@
 using Cerberus.Api.DTOs;
 using Cerberus.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace Cerberus.Api.Controllers
 {
     /// <summary>
-    /// User controller handling login logic.
+    /// Controller handling auth logic.
     /// </summary>
     /// <param name="logger">The controller information logger</param>
     /// <param name="securityTokenGenerator">Service generating a security token</param>
-    /// <param name="userService">Service managing users</param>
+    /// <param name="authService">Service managing auth</param>
     [ApiController]
     [Route("api/[controller]/[action]")]
-    public class UserController(
-        ILogger<UserController> logger,
+    public class AuthController(
+        ILogger<AuthController> logger,
         ISecurityTokenGenerator securityTokenGenerator,
-        IUserService userService) : ControllerBase
+        IAuthService authService) : ControllerBase
     {
         /// <summary>
         /// Creates a new user in the database. If the user exists, returns conflict with a message.
@@ -47,7 +46,7 @@ namespace Cerberus.Api.Controllers
 
             try
             {
-                await userService.RegisterUserAsync(request);
+                await authService.RegisterUserAsync(request);
             }
             catch(Exception)
             {
@@ -76,13 +75,14 @@ namespace Cerberus.Api.Controllers
         /// </remarks>
         /// <response code="200">Returns a JWT</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
+        /// <response code="401">When login fails</response>
         /// <response code="500">Internal server error</response>
         [HttpPost]
         public async Task<IActionResult> Login(LoginRequest request)
         {
             logger.LogInformation($"Logging in user {request.Username}");
 
-            var loggedIn = await userService.LoginUserAsync(request);
+            var loggedIn = await authService.LoginUserAsync(request);
 
             if (loggedIn)
             {

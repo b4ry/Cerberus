@@ -2,25 +2,24 @@
 using Cerberus.Api.DTOs;
 using Cerberus.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace Tests.Controllers
 {
-    public class UserControllerTests
+    public class AuthControllerTests
     {
-        private readonly UserController _controller;
-        private readonly Mock<IUserService> _userService;
-        private readonly Mock<ILogger<UserController>> _logger;
+        private readonly AuthController _controller;
+        private readonly Mock<IAuthService> _authService;
+        private readonly Mock<ILogger<AuthController>> _logger;
         private readonly Mock<ISecurityTokenGenerator> _securityTokenGenerator;
 
-        public UserControllerTests()
+        public AuthControllerTests()
         {
-            _userService = new Mock<IUserService>();
-            _logger = new Mock<ILogger<UserController>>();
+            _authService = new Mock<IAuthService>();
+            _logger = new Mock<ILogger<AuthController>>();
             _securityTokenGenerator = new Mock<ISecurityTokenGenerator>();
-            _controller = new UserController(_logger.Object, _securityTokenGenerator.Object, _userService.Object);
+            _controller = new AuthController(_logger.Object, _securityTokenGenerator.Object, _authService.Object);
         }
 
         [Fact]
@@ -28,14 +27,13 @@ namespace Tests.Controllers
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            _userService.Setup(x => x.RegisterUserAsync(request)).ReturnsAsync(true);
 
             // Act
             var result = await _controller.Register(request);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
-            _userService.Verify(x => x.RegisterUserAsync(request), Times.Once);
+            _authService.Verify(x => x.RegisterUserAsync(request), Times.Once);
         }
 
         [Fact]
@@ -43,11 +41,11 @@ namespace Tests.Controllers
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            _userService.Setup(x => x.RegisterUserAsync(request)).ThrowsAsync(new Exception());
+            _authService.Setup(x => x.RegisterUserAsync(request)).ThrowsAsync(new Exception());
 
             // Act
             await Assert.ThrowsAnyAsync<Exception>(() => _controller.Register(request));
-            _userService.Verify(x => x.RegisterUserAsync(request), Times.Once);
+            _authService.Verify(x => x.RegisterUserAsync(request), Times.Once);
         }
 
         [Fact]
@@ -58,7 +56,7 @@ namespace Tests.Controllers
             var jwtToken = "testJWT";
 
             _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(jwtToken);
-            _userService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(true);
+            _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(true);
 
             // Act
             var result = await _controller.Login(request);
@@ -66,7 +64,7 @@ namespace Tests.Controllers
             // Assert
             Assert.IsType<OkObjectResult>(result);
             Assert.Equal("testJWT", jwtToken);
-            _userService.Verify(x => x.LoginUserAsync(request), Times.Once);
+            _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
             _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Once);
         }
 
@@ -78,14 +76,14 @@ namespace Tests.Controllers
             var jwtToken = "testJWT";
 
             _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(jwtToken);
-            _userService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(false);
+            _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(false);
 
             // Act
             var result = await _controller.Login(request);
 
             // Assert
             Assert.IsType<UnauthorizedResult>(result);
-            _userService.Verify(x => x.LoginUserAsync(request), Times.Once);
+            _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
             _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Never);
         }
     }

@@ -8,19 +8,19 @@ using Moq;
 
 namespace Tests.Services
 {
-    public class UserServiceTests
+    public class AuthServiceTests
     {
         private readonly Mock<IUserRepository> _userRepository;
         private readonly Mock<IPasswordService> _passwordService;
-        private readonly IUserService _userService;
+        private readonly IAuthService _authService;
 
-        public UserServiceTests()
+        public AuthServiceTests()
         {
             _userRepository = new Mock<IUserRepository>();
             _passwordService = new Mock<IPasswordService>();
             _passwordService.Setup(x => x.HashPassword(It.IsAny<string>(), It.IsAny<string>())).Returns("testPassword");
 
-            _userService = new UserService(_userRepository.Object, _passwordService.Object);
+            _authService = new AuthService(_userRepository.Object, _passwordService.Object);
         }
 
         [Fact]
@@ -32,37 +32,23 @@ namespace Tests.Services
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
-            var result = await _userService.RegisterUserAsync(registerRequest);
+            var result = Record.ExceptionAsync(() => _authService.RegisterUserAsync(registerRequest));
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Null(result.Exception);
         }
 
         [Fact]
-        public async Task RegisterUserAsync_ShouldNotRegisterUser_WhenSuchUserExists()
-        {
-            // Arrange
-            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(false));
-
-            var registerRequest = new RegisterRequest("testUser", "testPassword");
-
-            // Act
-            var result = await _userService.RegisterUserAsync(registerRequest);
-
-            // Assert
-            Assert.False(result);
-        }
-
-        [Fact]
-        public async Task RegisterUserAsync_ShouldRethrowDbUpdateException_WhenUserExistsAndReadded()
+        public async Task RegisterUserAsync_ShouldRethrowDbUpdateException_WhenAddingAlreadyExistingUser()
         {
             // Arrange
             _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).ThrowsAsync(new DbUpdateException());
 
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
-            // Act && Assert
-            await Assert.ThrowsAnyAsync<DbUpdateException>(() => _userService.RegisterUserAsync(registerRequest));
+            // Act & Assert
+            await Assert.ThrowsAnyAsync<DbUpdateException>(() => _authService.RegisterUserAsync(registerRequest));
         }
 
         [Fact]
@@ -73,8 +59,8 @@ namespace Tests.Services
 
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
-            // Act && Assert
-            await Assert.ThrowsAnyAsync<Exception>(() => _userService.RegisterUserAsync(registerRequest));
+            // Act & Assert
+            await Assert.ThrowsAnyAsync<Exception>(() => _authService.RegisterUserAsync(registerRequest));
         }
 
         [Fact]
@@ -92,7 +78,7 @@ namespace Tests.Services
             _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity)!);
 
             // Act
-            var result = await _userService.LoginUserAsync(registerRequest);
+            var result = await _authService.LoginUserAsync(registerRequest);
 
             // Assert
             Assert.True(result);
@@ -107,7 +93,7 @@ namespace Tests.Services
             _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(new Mock<UserEntity>().Object)!);
 
             // Act
-            var result = await _userService.LoginUserAsync(registerRequest);
+            var result = await _authService.LoginUserAsync(registerRequest);
 
             // Assert
             Assert.False(result);
@@ -128,7 +114,7 @@ namespace Tests.Services
             _userRepository.Setup(x => x.FindAsync(It.IsAny<string>())).Returns(Task.FromResult(userEntity)!);
 
             // Act
-            var result = await _userService.LoginUserAsync(registerRequest);
+            var result = await _authService.LoginUserAsync(registerRequest);
 
             // Assert
             Assert.False(result);
