@@ -1,7 +1,13 @@
 ﻿namespace Cerberus.Api.Constants
 {
+    /// <summary>
+    /// Store constant variables
+    /// </summary>
     public class Constants
     {
-        public static readonly string Jwt = "Jwt";
+        /// <summary>
+        /// JWT section name
+        /// </summary>
+        public static readonly string JwtSectionName = "Jwt";
     }
 }

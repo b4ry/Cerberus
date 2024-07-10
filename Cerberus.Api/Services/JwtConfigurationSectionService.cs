@@ -8,7 +8,7 @@ namespace Cerberus.Api.Services
         public JwtConfigurationSection GetJwtConfigurationSection()
         {
             var jwtConfigurationSection = new JwtConfigurationSection();
-            configuration.GetSection(Constants.Constants.Jwt).Bind(jwtConfigurationSection);
+            configuration.GetSection(Constants.Constants.JwtSectionName).Bind(jwtConfigurationSection);
 
             return jwtConfigurationSection;
         }
