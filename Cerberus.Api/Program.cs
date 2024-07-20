@@ -55,7 +55,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtConfigurationSectionService, JwtConfigurationSectionService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(
+    options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var rateLimitConfigurationSection = new RateLimitConfigurationSection();
 builder.Configuration.GetSection("RateLimitOptions").Bind(rateLimitConfigurationSection);

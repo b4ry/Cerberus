@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Cerberus.DatabaseContext.Entities
+﻿namespace Cerberus.DatabaseContext.Entities
 {
     public class BaseEntity
     {
