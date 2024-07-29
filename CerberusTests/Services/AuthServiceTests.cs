@@ -32,11 +32,10 @@ namespace Tests.Services
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
             // Act
-            var result = Record.ExceptionAsync(() => _authService.RegisterUserAsync(registerRequest));
+            var result = await Record.ExceptionAsync(() => _authService.RegisterUserAsync(registerRequest));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Null(result.Exception);
+            Assert.Null(result);
         }
 
         [Fact]
