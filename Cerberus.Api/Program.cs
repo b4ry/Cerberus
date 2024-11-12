@@ -3,6 +3,7 @@ using Cerberus.Api.Options;
 using Cerberus.Api.Services;
 using Cerberus.Api.Services.Interfaces;
 using Cerberus.DatabaseContext;
+using Cerberus.DatabaseContext.Repositories;
 using Cerberus.DatabaseContext.Repositories.Interfaces;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +59,14 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader());
+});
+
 var rateLimitConfigurationSection = new RateLimitConfigurationSection();
 builder.Configuration.GetSection("RateLimitOptions").Bind(rateLimitConfigurationSection);
 
@@ -88,6 +97,7 @@ using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>(
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseRateLimiter();
+app.UseCors("AllowReactApp");
 app.MapControllers().RequireRateLimiting(rateLimitConfigurationSection.PolicyName); ;
 
 app.Run();

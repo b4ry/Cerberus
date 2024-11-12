@@ -2,27 +2,21 @@
 using Cerberus.DatabaseContext.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cerberus.DatabaseContext
+namespace Cerberus.DatabaseContext.Repositories
 {
     public class UserRepository(ApplicationDbContext applicationDbContext) : IUserRepository
     {
         public async Task<bool> AddAsync(UserEntity userEntity)
         {
-            await using var transaction = await applicationDbContext.Database.BeginTransactionAsync();
-
             try
             {
                 await applicationDbContext.AddAsync(userEntity);
                 var savedEntitiesNumber = await applicationDbContext.SaveChangesAsync();
 
-                await transaction.CommitAsync();
-
                 return savedEntitiesNumber > 0;
             }
-            catch(Exception)
+            catch (Exception)
             {
-                await transaction.RollbackAsync();
-
                 throw;
             }
         }

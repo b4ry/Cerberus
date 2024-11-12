@@ -2,7 +2,6 @@
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Net;
 
 namespace Cerberus.Api.Middlewares
 {
@@ -33,14 +32,18 @@ namespace Cerberus.Api.Middlewares
                         {
                             context.Response.StatusCode = StatusCodes.Status409Conflict;
                         }
+                        else
+                        {
+                            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                        }
                     }
                 }
                 else
                 {
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 }
                 
-                var response = JsonConvert.SerializeObject(new { errorMessage = ex.Message });
+                var response = JsonConvert.SerializeObject(new { errorMessage = ex.InnerException?.Message ?? ex.Message });
                 await context.Response.WriteAsync(response);
 
                 _logger.LogError(exception: ex, message: ex.Message, ex.Data);
