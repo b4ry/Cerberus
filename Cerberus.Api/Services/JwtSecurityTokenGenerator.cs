@@ -1,4 +1,5 @@
-﻿using Cerberus.Api.Services.Interfaces;
+﻿using Cerberus.Api.DTOs;
+using Cerberus.Api.Services.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -17,7 +18,7 @@ namespace Cerberus.Api.Services
         /// </summary>
         /// <param name="username">Logging in user's name</param>
         /// <returns>A JWT token issued by the configuration issuer, expiring in 5 minutes, signed with the configuration key.</returns>
-        public string GenerateSecurityToken(string username)
+        public AuthToken GenerateSecurityToken(string username)
         {
             var jwtConfigurationSection = jwtConfigurationSectionService.GetJwtConfigurationSection();
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfigurationSection.Key));
@@ -28,14 +29,16 @@ namespace Cerberus.Api.Services
             var jwtSecurityToken = new JwtSecurityToken(
                 jwtConfigurationSection.Issuer,
                 null,
-                expires: DateTime.Now.AddMinutes(5),
+                expires: DateTime.Now.AddMinutes(1),
                 signingCredentials: credentials,
                 claims: claims
             );
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
+            var refreshToken = Guid.NewGuid().ToString();
+            var refreshTokenExpiration = DateTime.UtcNow.AddDays(1);
 
-            return jwt;
+            return new AuthToken(jwt, refreshToken);
         }
     }
 }

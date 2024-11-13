@@ -23,17 +23,25 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        public async Task Register_ShouldReturnNoContent_WhenValidRequestAndUserDoesNotExist()
+        public async Task Register_ShouldReturnJWTAndRefreshToken_WhenValidRequestAndUserDoesNotExist()
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
+            var jwtToken = "testJWT";
+            var refreshToken = "test";
+
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(new AuthToken(jwtToken, refreshToken));
 
             // Act
             var result = await _controller.Register(request);
 
             // Assert
-            Assert.IsType<NoContentResult>(result);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var authToken = Assert.IsType<AuthToken>(okResult.Value);
+            Assert.Equal(jwtToken, authToken.Jwt);
+            Assert.Equal(refreshToken, authToken.RefreshToken);
             _authService.Verify(x => x.RegisterUserAsync(request), Times.Once);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Once);
         }
 
         [Fact]
@@ -49,21 +57,24 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        public async void Login_ShouldReturnJWT_WhenValidRequestAndSuccessfulLogin()
+        public async void Login_ShouldReturnJWTAndRefreshToken_WhenValidRequestAndSuccessfulLogin()
         {
             // Arrange
             var request = new LoginRequest("testUsername", "testPassword");
             var jwtToken = "testJWT";
+            var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(jwtToken);
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(new AuthToken(jwtToken, refreshToken));
             _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(true);
 
             // Act
             var result = await _controller.Login(request);
 
             // Assert
-            Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("testJWT", jwtToken);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var authToken = Assert.IsType<AuthToken>(okResult.Value);
+            Assert.Equal(jwtToken, authToken.Jwt);
+            Assert.Equal(refreshToken, authToken.RefreshToken);
             _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
             _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Once);
         }
@@ -74,8 +85,9 @@ namespace Tests.Controllers
             // Arrange
             var request = new LoginRequest("testUsername", "testPassword");
             var jwtToken = "testJWT";
+            var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(jwtToken);
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(new AuthToken(jwtToken, refreshToken));
             _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(false);
 
             // Act

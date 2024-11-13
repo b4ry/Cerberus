@@ -18,7 +18,7 @@ namespace Cerberus.Api.Controllers
         IAuthService authService) : ControllerBase
     {
         /// <summary>
-        /// Creates a new user in the database. If the user exists, returns conflict with a message.
+        /// Creates a new user in the database and if it does not exist, returns JWT token. If the user exists, returns an error with a message.
         /// </summary>
         /// <param name="request">An object encapsulating UserName and Password fields</param>
         /// <returns>
@@ -35,7 +35,7 @@ namespace Cerberus.Api.Controllers
         ///     }
         /// 
         /// </remarks>
-        /// <response code="204">When registers a user</response>
+        /// <response code="200">Returns a JWT</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
         /// <response code="409">When user exists</response>
         /// <response code="500">Internal server error</response>
@@ -52,8 +52,10 @@ namespace Cerberus.Api.Controllers
             {
                 throw;
             }
-            
-            return NoContent();
+
+            var authToken = securityTokenGenerator.GenerateSecurityToken(request.Username);
+
+            return Ok(authToken);
         }
 
         /// <summary>
@@ -86,9 +88,9 @@ namespace Cerberus.Api.Controllers
 
             if (loggedIn)
             {
-                string jwt = securityTokenGenerator.GenerateSecurityToken(request.Username);
+                var authToken = securityTokenGenerator.GenerateSecurityToken(request.Username);
 
-                return Ok(jwt);
+                return Ok(authToken);
             }
 
             return Unauthorized();

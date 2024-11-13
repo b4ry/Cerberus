@@ -21,7 +21,7 @@ namespace Tests.Services
         }
 
         [Fact]
-        public void GenerateSecurityToken_ShouldReturnJwtTokenWithCorrectProperties()
+        public void GenerateSecurityToken_ShouldReturnJwtAndRefreshTokensWithCorrectProperties()
         {
             // Arrange
             _jwtConfigurationSectionService.Setup(x => x.GetJwtConfigurationSection()).Returns(new JwtConfigurationSection
@@ -33,27 +33,26 @@ namespace Tests.Services
             var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object);
 
             // Act
-            var token = tokenGenerator.GenerateSecurityToken("testUserName");
+            var authToken = tokenGenerator.GenerateSecurityToken("testUserName");
 
             // Assert
-            Assert.NotNull(token);
-            Assert.NotEmpty(token);
+            Assert.NotNull(authToken.Jwt);
+            Assert.NotNull(authToken.RefreshToken);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var securityToken = tokenHandler.ReadToken(token) as JwtSecurityToken;
+            var securityToken = tokenHandler.ReadToken(authToken.Jwt) as JwtSecurityToken;
 
             Assert.NotNull(securityToken);
+            Assert.NotNull(authToken.RefreshToken);
             Assert.Equal(secretIssuer, securityToken.Issuer);
             Assert.NotNull(securityToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier));
             Assert.True(securityToken.ValidTo > DateTime.UtcNow);
         }
 
         [Fact]
-        public void GenerateSecurityToken_ShouldReturnValidJwtToken()
+        public void GenerateSecurityToken_ShouldReturnValidJwtAndRefreshTokens()
         {
             // Arrange
-            
-
             _jwtConfigurationSectionService.Setup(x => x.GetJwtConfigurationSection()).Returns(new JwtConfigurationSection
             {
                 Key = secretKey,
@@ -76,14 +75,14 @@ namespace Tests.Services
             };
 
             // Act
-            var token = tokenGenerator.GenerateSecurityToken("testUserName");
+            var authToken = tokenGenerator.GenerateSecurityToken("testUserName");
 
             // Assert
-            Assert.NotNull(token);
-            Assert.NotEmpty(token);
+            Assert.NotNull(authToken.Jwt);
+            Assert.NotNull(authToken.RefreshToken);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            tokenHandler.ValidateToken(authToken.Jwt, tokenValidationParameters, out var securityToken);
 
             Assert.NotNull(securityToken);
             Assert.Equal(signingCredentials.Key.GetHashCode(), securityToken.SigningKey.GetHashCode());
