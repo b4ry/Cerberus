@@ -22,7 +22,7 @@ namespace Tests.DatabaseContexts
             foreach (Type modelEntity in modelEntities)
             {
                 var modelEntityTypeName = modelEntity.GetTypeInfo().FullName;
-                var foundEntityType = applicationDbContext.Model.FindEntityType(modelEntityTypeName);
+                var foundEntityType = applicationDbContext.Model.FindEntityType(modelEntityTypeName!);
 
                 if (foundEntityType == null)
                 {
