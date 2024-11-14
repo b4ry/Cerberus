@@ -47,15 +47,14 @@ namespace Cerberus.Api.Controllers
             try
             {
                 await authService.RegisterUserAsync(request);
+                var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(request.Username);
+
+                return Ok(authToken);
             }
             catch(Exception)
             {
                 throw;
             }
-
-            var authToken = securityTokenGenerator.GenerateSecurityToken(request.Username);
-
-            return Ok(authToken);
         }
 
         /// <summary>
@@ -84,16 +83,23 @@ namespace Cerberus.Api.Controllers
         {
             logger.LogInformation($"Logging in user {request.Username}");
 
-            var loggedIn = await authService.LoginUserAsync(request);
-
-            if (loggedIn)
+            try
             {
-                var authToken = securityTokenGenerator.GenerateSecurityToken(request.Username);
+                var loggedIn = await authService.LoginUserAsync(request);
 
-                return Ok(authToken);
+                if (loggedIn)
+                {
+                    var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(request.Username);
+
+                    return Ok(authToken);
+                }
+
+                return Unauthorized();
             }
-
-            return Unauthorized();
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

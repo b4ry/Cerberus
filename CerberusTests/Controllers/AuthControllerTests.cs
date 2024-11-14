@@ -30,7 +30,7 @@ namespace Tests.Controllers
             var jwtToken = "testJWT";
             var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(new AuthToken(jwtToken, refreshToken));
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username)).Returns(Task.FromResult(new AuthToken(jwtToken, refreshToken)));
 
             // Act
             var result = await _controller.Register(request);
@@ -41,7 +41,7 @@ namespace Tests.Controllers
             Assert.Equal(jwtToken, authToken.Jwt);
             Assert.Equal(refreshToken, authToken.RefreshToken);
             _authService.Verify(x => x.RegisterUserAsync(request), Times.Once);
-            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Once);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username), Times.Once);
         }
 
         [Fact]
@@ -57,6 +57,18 @@ namespace Tests.Controllers
         }
 
         [Fact]
+        public async Task Login_ShouldThrowException_WhenExceptionOccurs()
+        {
+            // Arrange
+            var request = new LoginRequest("testUsername", "testPassword");
+            _authService.Setup(x => x.LoginUserAsync(request)).ThrowsAsync(new Exception());
+
+            // Act
+            await Assert.ThrowsAnyAsync<Exception>(() => _controller.Login(request));
+            _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
+        }
+
+        [Fact]
         public async void Login_ShouldReturnJWTAndRefreshToken_WhenValidRequestAndSuccessfulLogin()
         {
             // Arrange
@@ -64,7 +76,7 @@ namespace Tests.Controllers
             var jwtToken = "testJWT";
             var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(new AuthToken(jwtToken, refreshToken));
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username)).Returns(Task.FromResult(new AuthToken(jwtToken, refreshToken)));
             _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(true);
 
             // Act
@@ -76,7 +88,7 @@ namespace Tests.Controllers
             Assert.Equal(jwtToken, authToken.Jwt);
             Assert.Equal(refreshToken, authToken.RefreshToken);
             _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
-            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Once);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username), Times.Once);
         }
 
         [Fact]
@@ -87,7 +99,7 @@ namespace Tests.Controllers
             var jwtToken = "testJWT";
             var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityToken(request.Username)).Returns(new AuthToken(jwtToken, refreshToken));
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username)).Returns(Task.FromResult(new AuthToken(jwtToken, refreshToken)));
             _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(false);
 
             // Act
@@ -96,7 +108,7 @@ namespace Tests.Controllers
             // Assert
             Assert.IsType<UnauthorizedResult>(result);
             _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
-            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityToken(request.Username), Times.Never);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username), Times.Never);
         }
     }
 }

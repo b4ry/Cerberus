@@ -52,6 +52,7 @@ builder.Services.AddScoped(x => {
     return tokenGenerator;
 });
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IJwtConfigurationSectionService, JwtConfigurationSectionService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();

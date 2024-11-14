@@ -1,6 +1,9 @@
 using Cerberus.Api.ConfigurationSections;
 using Cerberus.Api.Services;
 using Cerberus.Api.Services.Interfaces;
+using Cerberus.DatabaseContext.Entities;
+using Cerberus.DatabaseContext.Repositories;
+using Cerberus.DatabaseContext.Repositories.Interfaces;
 using Microsoft.IdentityModel.Tokens;
 using Moq;
 using System.IdentityModel.Tokens.Jwt;
@@ -12,16 +15,19 @@ namespace Tests.Services
     public class JwtSecurityTokenGeneratorTests
     {
         private readonly Mock<IJwtConfigurationSectionService> _jwtConfigurationSectionService;
+        private readonly Mock<IRefreshTokenRepository> _refreshTokenRepository;
+
         private const string secretIssuer = "secretIssuer.com";
         private const string secretKey = "TestSecurityKeyForAuthentication";
 
         public JwtSecurityTokenGeneratorTests()
         {
-            _jwtConfigurationSectionService = new Mock<IJwtConfigurationSectionService>();        
+            _jwtConfigurationSectionService = new Mock<IJwtConfigurationSectionService>();
+            _refreshTokenRepository = new Mock<IRefreshTokenRepository>();
         }
 
         [Fact]
-        public void GenerateSecurityToken_ShouldReturnJwtAndRefreshTokensWithCorrectProperties()
+        public async void GenerateSecurityToken_ShouldReturnJwtAndRefreshTokensWithCorrectProperties()
         {
             // Arrange
             _jwtConfigurationSectionService.Setup(x => x.GetJwtConfigurationSection()).Returns(new JwtConfigurationSection
@@ -30,10 +36,10 @@ namespace Tests.Services
                 Issuer = secretIssuer
             });
 
-            var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object);
+            var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object, _refreshTokenRepository.Object);
 
             // Act
-            var authToken = tokenGenerator.GenerateSecurityToken("testUserName");
+            var authToken = await tokenGenerator.GenerateSecurityTokenAsync("testUserName");
 
             // Assert
             Assert.NotNull(authToken.Jwt);
@@ -47,10 +53,11 @@ namespace Tests.Services
             Assert.Equal(secretIssuer, securityToken.Issuer);
             Assert.NotNull(securityToken.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier));
             Assert.True(securityToken.ValidTo > DateTime.UtcNow);
+            _refreshTokenRepository.Verify(x => x.AddAsync(It.IsAny<RefreshTokenEntity>()), Times.Once);
         }
 
         [Fact]
-        public void GenerateSecurityToken_ShouldReturnValidJwtAndRefreshTokens()
+        public async void GenerateSecurityToken_ShouldReturnValidJwtAndRefreshTokens()
         {
             // Arrange
             _jwtConfigurationSectionService.Setup(x => x.GetJwtConfigurationSection()).Returns(new JwtConfigurationSection
@@ -59,7 +66,7 @@ namespace Tests.Services
                 Issuer = secretIssuer
             });
 
-            var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object);
+            var tokenGenerator = new JwtSecurityTokenGenerator(_jwtConfigurationSectionService.Object, _refreshTokenRepository.Object);
 
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -75,7 +82,7 @@ namespace Tests.Services
             };
 
             // Act
-            var authToken = tokenGenerator.GenerateSecurityToken("testUserName");
+            var authToken = await tokenGenerator.GenerateSecurityTokenAsync("testUserName");
 
             // Assert
             Assert.NotNull(authToken.Jwt);
@@ -86,6 +93,7 @@ namespace Tests.Services
 
             Assert.NotNull(securityToken);
             Assert.Equal(signingCredentials.Key.GetHashCode(), securityToken.SigningKey.GetHashCode());
+            _refreshTokenRepository.Verify(x => x.AddAsync(It.IsAny<RefreshTokenEntity>()), Times.Once);
         }
     }
 }

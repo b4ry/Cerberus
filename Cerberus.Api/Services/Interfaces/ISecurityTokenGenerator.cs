@@ -12,6 +12,6 @@ namespace Cerberus.Api.Services.Interfaces
         /// </summary>
         /// <param name="userName">Logging in user's name</param>
         /// <returns>A security token. String.</returns>
-        public AuthToken GenerateSecurityToken(string userName);
+        public Task<AuthToken> GenerateSecurityTokenAsync(string userName);
     }
 }
