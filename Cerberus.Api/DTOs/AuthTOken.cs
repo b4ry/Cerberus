@@ -1,30 +1,30 @@
 ﻿namespace Cerberus.Api.DTOs
 {
     /// <summary>
-    /// Auth token containing jwt access and refresh tokens
+    /// Auth token containing access and refresh tokens
     /// </summary>
     public sealed record AuthToken
     {
         /// <summary>
         /// Authorization token constructor.
-        /// Accepts two string parameters: jwt and refreshToken
+        /// Accepts two string parameters: AccessToken and RefreshToken
         /// </summary>
-        /// <param name="jwt"> Encoded jwt access token. String. </param>
-        /// <param name="refreshToken"> Refresh token. String. </param>
-        public AuthToken(string jwt, string refreshToken)
+        /// <param name="accessToken"> Access token. String. </param>
+        /// <param name="refreshToken"> Refresh token. Nullable, String. </param>
+        public AuthToken(string accessToken, string? refreshToken)
         {
-            Jwt = jwt;
+            AccessToken = accessToken;
             RefreshToken = refreshToken;
         }
 
         /// <summary>
-        /// Jwt access token. String.
+        /// Access token. String.
         /// </summary>
-        public string Jwt { get; set; }
+        public string AccessToken { get; set; }
 
         /// <summary>
-        /// Refresh token. String.
+        /// Refresh token. Nullable, String.
         /// </summary>
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }

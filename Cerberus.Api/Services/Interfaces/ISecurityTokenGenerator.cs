@@ -8,10 +8,11 @@ namespace Cerberus.Api.Services.Interfaces
     public interface ISecurityTokenGenerator
     {
         /// <summary>
-        /// Generates a security token, eg. JWT.
+        /// Generates a security token, eg. jwt.
         /// </summary>
         /// <param name="userName">Logging in user's name</param>
-        /// <returns>A security token. String.</returns>
-        public Task<AuthToken> GenerateSecurityTokenAsync(string userName);
+        /// <param name="generateRefreshToken">Flag to control refresh token generation</param>
+        /// <returns>A security token. AuthToken object.</returns>
+        public Task<AuthToken> GenerateSecurityTokenAsync(string userName, bool generateRefreshToken = false);
     }
 }

@@ -23,25 +23,25 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        public async Task Register_ShouldReturnJWTAndRefreshToken_WhenValidRequestAndUserDoesNotExist()
+        public async Task Register_ShouldReturnAccessAndRefreshTokens_WhenValidRequestAndUserDoesNotExist()
         {
             // Arrange
             var request = new RegisterRequest("testUsername", "testPassword");
-            var jwtToken = "testJWT";
+            var accessToken = "testAccessToken";
             var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username)).Returns(Task.FromResult(new AuthToken(jwtToken, refreshToken)));
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username, true)).Returns(Task.FromResult(new AuthToken(accessToken, refreshToken)));
 
             // Act
             var result = await _controller.Register(request);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var authToken = Assert.IsType<AuthToken>(okResult.Value);
-            Assert.Equal(jwtToken, authToken.Jwt);
-            Assert.Equal(refreshToken, authToken.RefreshToken);
+            var authTokenResult = Assert.IsType<AuthToken>(okResult.Value);
+            Assert.Equal(accessToken, authTokenResult.AccessToken);
+            Assert.Equal(refreshToken, authTokenResult.RefreshToken);
             _authService.Verify(x => x.RegisterUserAsync(request), Times.Once);
-            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username), Times.Once);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username, true), Times.Once);
         }
 
         [Fact]
@@ -69,14 +69,14 @@ namespace Tests.Controllers
         }
 
         [Fact]
-        public async void Login_ShouldReturnJWTAndRefreshToken_WhenValidRequestAndSuccessfulLogin()
+        public async void Login_ShouldReturnAccessAndRefreshTokens_WhenValidRequestAndSuccessfulLogin()
         {
             // Arrange
             var request = new LoginRequest("testUsername", "testPassword");
-            var jwtToken = "testJWT";
+            var accessToken = "testAccessToken";
             var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username)).Returns(Task.FromResult(new AuthToken(jwtToken, refreshToken)));
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username, true)).Returns(Task.FromResult(new AuthToken(accessToken, refreshToken)));
             _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(true);
 
             // Act
@@ -85,10 +85,10 @@ namespace Tests.Controllers
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var authToken = Assert.IsType<AuthToken>(okResult.Value);
-            Assert.Equal(jwtToken, authToken.Jwt);
+            Assert.Equal(accessToken, authToken.AccessToken);
             Assert.Equal(refreshToken, authToken.RefreshToken);
             _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
-            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username), Times.Once);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username, true), Times.Once);
         }
 
         [Fact]
@@ -96,10 +96,10 @@ namespace Tests.Controllers
         {
             // Arrange
             var request = new LoginRequest("testUsername", "testPassword");
-            var jwtToken = "testJWT";
+            var accessToken = "testAccessToken";
             var refreshToken = "test";
 
-            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username)).Returns(Task.FromResult(new AuthToken(jwtToken, refreshToken)));
+            _securityTokenGenerator.Setup(x => x.GenerateSecurityTokenAsync(request.Username, false)).Returns(Task.FromResult(new AuthToken(accessToken, refreshToken)));
             _authService.Setup(x => x.LoginUserAsync(request)).ReturnsAsync(false);
 
             // Act
@@ -108,7 +108,48 @@ namespace Tests.Controllers
             // Assert
             Assert.IsType<UnauthorizedResult>(result);
             _authService.Verify(x => x.LoginUserAsync(request), Times.Once);
-            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username), Times.Never);
+            _securityTokenGenerator.Verify(svc => svc.GenerateSecurityTokenAsync(request.Username, false), Times.Never);
+        }
+
+        [Fact]
+        public async void RefreshToken_ShouldReturnUnauthorized_WhenValidRequestAndRefreshTokenDoesNotExist()
+        {
+            // Arrange
+            var refreshTokenId = "testId";
+            var username = "testUser";
+            var refreshTokenRequest = new RefreshTokenRequest() { RefreshTokenId = refreshTokenId, Username = username };
+
+            _authService.Setup(x => x.RefreshTokenAsync(refreshTokenRequest)).ReturnsAsync((AuthToken?)null);
+
+            // Act
+            var result = await _controller.RefreshToken(refreshTokenRequest);
+
+            // Assert
+            Assert.IsType<UnauthorizedResult>(result);
+            _authService.Verify(x => x.RefreshTokenAsync(refreshTokenRequest), Times.Once);
+        }
+
+        [Fact]
+        public async void RefreshToken_ShouldReturnAuthToken_WhenValidRequestAndRefreshTokenExists()
+        {
+            // Arrange
+            var refreshTokenId = "testId";
+            var username = "testUser";
+            var accessToken = "testAccessToken";
+            var refreshTokenRequest = new RefreshTokenRequest() { RefreshTokenId = refreshTokenId, Username = username };
+            var authToken = new AuthToken(accessToken, refreshTokenId);
+
+            _authService.Setup(x => x.RefreshTokenAsync(refreshTokenRequest)).ReturnsAsync(authToken);
+
+            // Act
+            var result = await _controller.RefreshToken(refreshTokenRequest);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var authTokenResult = Assert.IsType<AuthToken>(okResult.Value);
+            Assert.Equal(refreshTokenId, authTokenResult.RefreshToken);
+            Assert.Equal(accessToken, authTokenResult.AccessToken);
+            _authService.Verify(x => x.RefreshTokenAsync(refreshTokenRequest), Times.Once);
         }
     }
 }

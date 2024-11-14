@@ -22,11 +22,12 @@ namespace Cerberus.Api.Services
         /// Generates a jwt security token based on the jwt configuration's key and issuer. Also, generates a refresh token.
         /// </summary>
         /// <param name="username">Logging in user's name</param>
+        /// <param name="generateRefreshToken">Flag to control refresh token generation</param>
         /// <returns>
         ///     AuthToken containing a jwt token issued by the configuration issuer, expiring in x minutes, signed with the configuration key
         ///     and a corresponding refresh token.
         /// </returns>
-        public async Task<AuthToken> GenerateSecurityTokenAsync(string username)
+        public async Task<AuthToken> GenerateSecurityTokenAsync(string username, bool generateRefreshToken)
         {
             try
             {
@@ -45,15 +46,22 @@ namespace Cerberus.Api.Services
                 );
 
                 var jwt = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
-                var refreshToken = new RefreshTokenEntity()
+
+                // TODO: move it somewhere else; it should not be a responsibility of this method
+                if (generateRefreshToken)
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    ValidUntil = DateTime.UtcNow.AddDays(1)
-                };
+                    var refreshToken = new RefreshTokenEntity()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        ValidUntil = DateTime.UtcNow.AddDays(1)
+                    };
 
-                await refreshTokenRepository.AddAsync(refreshToken);
+                    await refreshTokenRepository.AddAsync(refreshToken);
 
-                return new AuthToken(jwt, refreshToken.Id);
+                    return new AuthToken(jwt, refreshToken.Id);
+                }
+
+                return new AuthToken(jwt, null);
             }
             catch(Exception ex)
             {

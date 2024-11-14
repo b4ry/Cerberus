@@ -9,8 +9,14 @@ namespace Cerberus.Api.Services
     /// Handles users' authentication and authorization logic.
     /// </summary>
     /// <param name="userRepository">User repository handling user entity</param>
+    /// <param name="refreshTokenRepository">Refresh token repository</param>
     /// <param name="passwordService">Password service handling password related logic like hashing, salting</param>
-    public class AuthService(IUserRepository userRepository, IPasswordService passwordService) : IAuthService
+    /// <param name="securityTokenGenerator">Service generating a security token</param>
+    public class AuthService(
+        IUserRepository userRepository,
+        IRefreshTokenRepository refreshTokenRepository,
+        IPasswordService passwordService,
+        ISecurityTokenGenerator securityTokenGenerator) : IAuthService
     {
         /// <summary>
         /// Registers users. If a user already exists, then the underlying exception, enriched with some additional information, is being re-thrown.
@@ -65,5 +71,26 @@ namespace Cerberus.Api.Services
             return false;
         }
 
+        /// <summary>
+        /// Refreshes token, generating a new access token when the refresh token is still valid. Otherwise, returns null.
+        /// </summary>
+        /// <param name="refreshTokenRequest">Request to refresh a token</param>
+        /// <returns>
+        ///     AuthToken when successful,
+        ///     Null when fails
+        /// </returns>
+        public async Task<AuthToken?> RefreshTokenAsync(RefreshTokenRequest refreshTokenRequest)
+        {
+            var refreshToken = await refreshTokenRepository.FindAsync(refreshTokenRequest.RefreshTokenId);
+
+            if(refreshToken == null || refreshToken.ValidUntil < DateTime.UtcNow)
+            {
+                return null;
+            }
+
+            var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(refreshTokenRequest.Username);
+
+            return new AuthToken(authToken.AccessToken, refreshTokenRequest.RefreshTokenId);
+        }
     }
 }

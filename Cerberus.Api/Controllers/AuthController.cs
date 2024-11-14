@@ -18,13 +18,14 @@ namespace Cerberus.Api.Controllers
         IAuthService authService) : ControllerBase
     {
         /// <summary>
-        /// Creates a new user in the database and if it does not exist, returns JWT token. If the user exists, returns an error with a message.
+        /// Creates a new user in the database and if it does not exist, returns access token. If the user exists, returns an error with a message.
         /// </summary>
         /// <param name="request">An object encapsulating UserName and Password fields</param>
         /// <returns>
-        ///     No content, when registered a user
+        ///     AuthToken when registered a user
         ///     Bad request, when missing fields
-        ///     Conflict, when user exists</returns>
+        ///     Conflict, when user exists
+        /// </returns>
         /// <remarks>
         /// Sample request:
         /// 
@@ -35,7 +36,7 @@ namespace Cerberus.Api.Controllers
         ///     }
         /// 
         /// </remarks>
-        /// <response code="200">Returns a JWT</response>
+        /// <response code="200">AuthToken encapsulating access and refresh tokens</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
         /// <response code="409">When user exists</response>
         /// <response code="500">Internal server error</response>
@@ -47,7 +48,7 @@ namespace Cerberus.Api.Controllers
             try
             {
                 await authService.RegisterUserAsync(request);
-                var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(request.Username);
+                var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(request.Username, true);
 
                 return Ok(authToken);
             }
@@ -58,12 +59,14 @@ namespace Cerberus.Api.Controllers
         }
 
         /// <summary>
-        /// Returns a JWT, if user provides correct credentials.
+        /// Returns an access token, if user provides correct credentials.
         /// </summary>
         /// <param name="request">An object encapsulating UserName and Password fields</param>
         /// <returns>
-        ///     JWT token, when login succeesful.
-        ///     Bad request with corresponding errors</returns>
+        ///     AuthToken encapsulating access and refresh tokens when login succeesful
+        ///     Bad request with corresponding errors
+        ///     Unauthorized when login fails
+        /// </returns>
         /// <remarks>
         /// Sample request:
         /// 
@@ -74,7 +77,7 @@ namespace Cerberus.Api.Controllers
         ///     }
         /// 
         /// </remarks>
-        /// <response code="200">Returns a JWT</response>
+        /// <response code="200">AuthToken encapsulating access and refresh tokens</response>
         /// <response code="400">When either a Username or a Password field is not provided or empty</response>
         /// <response code="401">When login fails</response>
         /// <response code="500">Internal server error</response>
@@ -89,14 +92,59 @@ namespace Cerberus.Api.Controllers
 
                 if (loggedIn)
                 {
-                    var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(request.Username);
+                    var authToken = await securityTokenGenerator.GenerateSecurityTokenAsync(request.Username, true);
 
                     return Ok(authToken);
                 }
 
                 return Unauthorized();
             }
-            catch (Exception)
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Returns AuthToken with newly generated access and old refresh tokens.
+        /// </summary>
+        /// <param name="request">An object encapsulating refresh token id and username for new access token generation</param>
+        /// <returns>
+        ///     AuthToken encapsulating access and refresh tokens when login succeesful
+        ///     Bad request with corresponding errors
+        ///     Unauthorized when login fails
+        /// </returns>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///     POST /api/user/refreshtoken
+        ///     {
+        ///         "refreshTokenId": "testRefreshTokenId",
+        ///         "username": "testUsername"
+        ///     }
+        /// 
+        /// </remarks>
+        /// <response code="200">AuthToken encapsulating access and refresh tokens</response>
+        /// <response code="400">When either a Username or a RefreshTokenId field is not provided or empty</response>
+        /// <response code="401">When refresh token does not exist or expired</response>
+        /// <response code="500">Internal server error</response>
+        [HttpPost]
+        public async Task<IActionResult> RefreshToken(RefreshTokenRequest request)
+        {
+            logger.LogInformation($"Refreshing token for user {request.Username}");
+
+            try
+            {
+                var authToken = await authService.RefreshTokenAsync(request);
+
+                if(authToken == null)
+                {
+                    return Unauthorized();
+                }
+
+                return Ok(authToken);
+            }
+            catch
             {
                 throw;
             }
