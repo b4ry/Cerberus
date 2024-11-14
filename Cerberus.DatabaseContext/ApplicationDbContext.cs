@@ -10,6 +10,7 @@ namespace Cerberus.DatabaseContext
         private readonly string _databaseContextAssemblyName = "Cerberus.DatabaseContext";
 
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<RefreshTokenEntity> RefreshToken { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

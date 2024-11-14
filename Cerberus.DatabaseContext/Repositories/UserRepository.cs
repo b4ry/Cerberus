@@ -6,14 +6,12 @@ namespace Cerberus.DatabaseContext.Repositories
 {
     public class UserRepository(ApplicationDbContext applicationDbContext) : IUserRepository
     {
-        public async Task<bool> AddAsync(UserEntity userEntity)
+        public async Task AddAsync(UserEntity userEntity)
         {
             try
             {
                 await applicationDbContext.AddAsync(userEntity);
-                var savedEntitiesNumber = await applicationDbContext.SaveChangesAsync();
-
-                return savedEntitiesNumber > 0;
+                await applicationDbContext.SaveChangesAsync();
             }
             catch (Exception)
             {

@@ -27,7 +27,7 @@ namespace Tests.Services
         public async Task RegisterUserAsync_ShouldRegisterUser_WhenSuchUserDoesNotExist()
         {
             // Arrange
-            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.FromResult(true));
+            _userRepository.Setup(x => x.AddAsync(It.IsAny<UserEntity>())).Returns(Task.CompletedTask);
 
             var registerRequest = new RegisterRequest("testUser", "testPassword");
 
