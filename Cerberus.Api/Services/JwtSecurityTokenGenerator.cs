@@ -40,7 +40,7 @@ namespace Cerberus.Api.Services
                 var jwtSecurityToken = new JwtSecurityToken(
                     jwtConfigurationSection.Issuer,
                     null,
-                    expires: DateTime.Now.AddMinutes(1),
+                    expires: DateTime.Now.AddHours(1),
                     signingCredentials: credentials,
                     claims: claims
                 );

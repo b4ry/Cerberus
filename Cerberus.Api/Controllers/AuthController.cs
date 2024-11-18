@@ -29,7 +29,7 @@ namespace Cerberus.Api.Controllers
         /// <remarks>
         /// Sample request:
         /// 
-        ///     POST /api/user/register
+        ///     POST /api/auth/register
         ///     {
         ///         "username": "testUsername",
         ///         "password": "testPassword"
@@ -70,7 +70,7 @@ namespace Cerberus.Api.Controllers
         /// <remarks>
         /// Sample request:
         /// 
-        ///     POST /api/user/login
+        ///     POST /api/auth/login
         ///     {
         ///         "username": "testUsername",
         ///         "password": "testPassword"
@@ -117,7 +117,7 @@ namespace Cerberus.Api.Controllers
         /// <remarks>
         /// Sample request:
         /// 
-        ///     POST /api/user/refreshtoken
+        ///     POST /api/auth/refreshtoken
         ///     {
         ///         "refreshTokenId": "testRefreshTokenId",
         ///         "username": "testUsername"

@@ -11,6 +11,8 @@ using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Threading.RateLimiting;
 
+const string ReactAppCorsPolicyName = "AllowReactApp";
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -62,7 +64,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    options.AddPolicy(ReactAppCorsPolicyName, policy =>
         policy.WithOrigins("http://localhost:3000")
               .AllowAnyMethod()
               .AllowAnyHeader());
@@ -98,7 +100,7 @@ using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>(
 
 app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseRateLimiter();
-app.UseCors("AllowReactApp");
+app.UseCors(ReactAppCorsPolicyName);
 app.MapControllers().RequireRateLimiting(rateLimitConfigurationSection.PolicyName); ;
 
 app.Run();
